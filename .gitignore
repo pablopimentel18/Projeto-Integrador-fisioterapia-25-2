@@ -15,6 +15,4 @@ __pycache__/
 .vscode/
 *.DS_Store
 
-# Arquivos de Configuração Sensíveis
-.env
-migrations/
+/config/local_settings.py
