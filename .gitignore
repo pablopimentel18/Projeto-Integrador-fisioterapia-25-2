@@ -15,4 +15,4 @@ __pycache__/
 .vscode/
 *.DS_Store
 
-/config/local_settings.py
+config/local_settings.py
