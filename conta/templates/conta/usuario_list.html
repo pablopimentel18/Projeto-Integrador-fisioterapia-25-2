@@ -1,0 +1,27 @@
+{% extends 'menu.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Corredor</th>
+                <th>Corridas</th>
+            </tr>
+        </thead>
+
+        {% for corredor in corredores %}
+        <tbody>
+            <tr>
+                <td>{{corredor}}</td>
+                <td><a href="{% url 'corrida_list' corredor.id%}" class="btn btn-secondary">Ver corridas</a></td>
+            </tr>
+        </tbody>
+
+        {%endfor%}
+    </table>
+
+    <a href="{% url 'create_user' %}" class="btn btn-primary">Criar novo corredor</a>
+</div>
+
+{% endblock content %}

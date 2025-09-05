@@ -1,0 +1,11 @@
+{% extends 'menu.html' %}
+{% block content%}
+<div class="container mt-3">
+    <form action="{% url 'create_user'%}" method="post">
+        {% csrf_token %}
+        {{form_user.as_p}}
+        {{form_usuario.as_p}}
+        <input type="submit" value="Submeter" class="btn btn-success">
+    </form>
+</div>
+{% endblock%}

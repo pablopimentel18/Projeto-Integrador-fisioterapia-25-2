@@ -1,0 +1,50 @@
+{%extends 'footer.html'%}
+{%block navbar%}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
+        </li>
+
+        {% if user.is_authenticated %}
+        <div class="dropdown container">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Funcionalidades
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'sobre' %}">Sobre</a></li>
+            <li><a class="dropdown-item" href="{% url 'usuario_list' %}">Usuarios</a></li>
+            <li><a class="dropdown-item" href="{% url 'usuario_read' user.id %}">Perfil</a></li>
+
+          </ul>
+        </div>
+        {% endif %}
+      </ul>
+
+      {% if user.is_authenticated %}
+
+      <p style="color: beige; margin: 15px;">Olá, {{user}}</p>
+      <div class="nav-item">
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="link-button btn btn-danger">Logout</button>
+        </form>
+      </div>
+      {% else %}
+      <a class="btn btn-success m-2" href="{% url 'login' %}">Login</a>
+      <a href="{% url 'create_user'%}" class="btn btn-success">Criar Conta</a>
+      {% endif %}
+
+    </div>
+  </div>
+</nav>
+
+{%endblock navbar%}
