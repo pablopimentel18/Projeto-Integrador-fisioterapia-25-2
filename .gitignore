@@ -14,3 +14,7 @@ __pycache__/
 .idea/
 .vscode/
 *.DS_Store
+
+# Arquivos de Configuração Sensíveis
+.env
+migrations/

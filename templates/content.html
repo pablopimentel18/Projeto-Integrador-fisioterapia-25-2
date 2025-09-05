@@ -1,0 +1,49 @@
+{%extends 'menu.html'%}
+{%block content%}
+
+<div class="container mt-3">
+    <h3>Aqui você pode encontrar as principais </h3>
+    <div class="container me-4">
+        <h3>funcionalidades do nosso site!</h3>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Você pode ver um pouquinho sobre o projeto!</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a href="{% url 'sobre' %}" class="btn btn-primary">Clique aqui para ver sobre!</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+        {% if user.is_authenticated %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Você pode ver uma lista com todos os usuarios!</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a href="{% url 'usuario_list' %}" class="btn btn-primary">Clique aqui para ver os usuarios!</a></td>
+            </tr>
+        </tbody>
+
+        <thead>
+            <tr>
+                <th>Você pode ver o seu perfil!</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a href="{% url 'usuario_read' user.id %}" class="btn btn-primary">Ver Perfil!</a></td>
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{%endblock content%}

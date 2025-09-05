@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto Integrador I</title>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="sweetalert2.all.min.js"></script>
+    <style>
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        .footer_content {
+            text-align: center;
+
+        }
+
+        .footer_title {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .footer_customize {
+            position: relative;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 11rem;
+            background: #ccc;
+        }
+    </style>
+    <script>
+        function user_deletado() {
+            return Swal.fire(
+                'Usuário deletado!',
+                'Agora você não existe mais no sistema!',
+                'success'
+            )
+        }
+
+
+        function criar_usuario() {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+            return Toast.fire({
+                icon: 'success',
+                title: 'Usuario Criado com Sucesso!'
+            })
+        }
+    </script>
+</head>
+
+<body>
+
+    {%block navbar%}
+    {%endblock navbar%}
+
+    {%block content%}
+    {%endblock content%}
+
+    <div class="mt-3">
+        <footer>
+            {%block footer%}
+            {%endblock footer%}
+        </footer>
+    </div>
+
+
+
+</body>
+
+</html>
