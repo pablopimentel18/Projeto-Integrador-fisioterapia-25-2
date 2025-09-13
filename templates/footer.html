@@ -1,23 +1,18 @@
 {% extends 'base.html' %}
 {% block footer %}
 
+<footer class="text-center text-white footer_customize {% if footer_position == 'absolute' %} footer_is_absolute {% endif %}" style="background-color: #3f51b5">
+    <div class="footer_title">
+        Participantes
+    </div>
+    <div>
+        <h5 class="footer_content"> 
+            <br> Pablo da Rosa Pimentel 
+            <br> Arthur Benedet dos Santos Custodio 
+            <br> Kaio Francisco Martinhago 
+            <br> Eduardo Abrahao Malateaux Takayama 
+        </h5>
+    </div>
+</footer>
 
-<!-- Remove the container if you want to extend the Footer to full width. -->
-<div class="navbar-fixed-bottom">
-    <!-- Footer -->
-    <footer class="text-center text-white footer_customize" style="background-color: #3f51b5">
-        <!-- Grid container -->
-        <!-- Copyright -->
-        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
-            Participantes
-
-            <!-- Copyright -->
-        </div>
-        <div>
-            <h5>Pablo da Rosa Pimentel <br> Arthur Benedet dos Santos Custódio <br> Kaio <br> Eduardo</h5>
-        </div>
-    </footer>
-    <!-- Footer -->
-</div>
-<!-- End of .container -->
 {% endblock footer %}

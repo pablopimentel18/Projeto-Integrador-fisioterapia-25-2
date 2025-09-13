@@ -60,7 +60,8 @@ def create_user(request):
     context = {
         'mensagem': mensagem,
         'form_user': form_user,
-        'form_usuario': form_usuario
+        'form_usuario': form_usuario,
+        'footer_position' : 'absolute',
     }
     return render(request, 'conta/create_user.html', context)
 
@@ -97,7 +98,8 @@ def usuario_update(request, user_id):
         usuario_form = UsuarioForm(instance=usuario)
     context = {
         'usuario_form': usuario_form,
-        'usuario': usuario
+        'usuario': usuario,
+        'footer_position' : 'absolute',
     }
     return render(request, 'conta/usuario_update.html', context)
 
@@ -116,7 +118,8 @@ def usuario_read(request, usuario_id):
     """ Esta view é responsável por exibir os detalhes de um usuario específico """
     usuario = get_object_or_404(Usuario, pk=usuario_id)
     context = {
-        'usuario': usuario
+        'usuario': usuario,
+        'footer_position' : 'absolute',
     }
     return render(request, 'conta/usuario_read.html', context)
 
