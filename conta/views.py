@@ -61,7 +61,6 @@ def create_user(request):
         'mensagem': mensagem,
         'form_user': form_user,
         'form_usuario': form_usuario,
-        'footer_position' : 'absolute',
     }
     return render(request, 'conta/create_user.html', context)
 
