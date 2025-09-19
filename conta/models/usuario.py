@@ -3,7 +3,7 @@ from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.utils import timezone
 from datetime import datetime
 from django.contrib.auth.models import User
-from base import BaseModel
+from .base import BaseModel
 data = datetime.now()
 
 class Usuario(BaseModel):

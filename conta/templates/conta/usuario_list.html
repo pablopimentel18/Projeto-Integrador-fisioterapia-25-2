@@ -5,23 +5,27 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Corredor</th>
-                <th>Corridas</th>
+                <th>Usuário</th>
+                <th>Email</th>
+                <th>Senha</th>
+                <th>Telefone</th>
             </tr>
         </thead>
 
-        {% for corredor in corredores %}
+        {% for usuario in usuarios %}
         <tbody>
             <tr>
-                <td>{{corredor}}</td>
-                <td><a href="{% url 'corrida_list' corredor.id%}" class="btn btn-secondary">Ver corridas</a></td>
+                <td>{{usuario}}</td>
+                <td>{{usuario.email}}</td>
+                <td>{{usuario.senha}}</td>
+                <td>{{usuario.numero_telefone}}</td>
             </tr>
         </tbody>
 
         {%endfor%}
     </table>
 
-    <a href="{% url 'create_user' %}" class="btn btn-primary">Criar novo corredor</a>
+    <a href="{% url 'create_user' %}" class="btn btn-primary">Criar novo usuario</a>
 </div>
 
 {% endblock content %}

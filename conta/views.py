@@ -75,7 +75,7 @@ def usuario_delete(request, usuario_id):
         usuario.delete()
         user.delete()
         mensagem = 'Usuario apagado com sucesso'
-        return redirect('logout')
+        return redirect('login')
     except:
         context = {
             'mensagem': mensagem
