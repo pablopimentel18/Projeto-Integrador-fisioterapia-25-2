@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from conta.models.usuario import *
-from .forms import UserForm, UsuarioForm
+from conta.models.paciente import Paciente
+from .forms import UserForm, UsuarioForm, PacienteForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -103,11 +104,16 @@ def usuario_update(request, user_id):
     return render(request, 'conta/usuario_update.html', context)
 
 @login_required
-def usuario_list(request):
+def usuario_list(request, usuario_id):
     """ Esta view é responsável por listar todos os usuario que estão cadastrados no banco de dados """
-    usuarios = Usuario.objects.all()
+    avaliador = get_object_or_404(Usuario, pk=usuario_id)
+    usuarios = Paciente.objects.all()
+    usuarios_validados = []
+    for paciente in usuarios:
+        if paciente.avaliador == avaliador:
+            usuarios_validados.append(paciente)
     context = {
-        'usuarios': usuarios
+        'pacientes': usuarios_validados
     }
 
     return render(request, 'conta/usuario_list.html', context)
@@ -125,3 +131,63 @@ def usuario_read(request, usuario_id):
 def sobre(request):
     """ Esta view é responsável por exibir a página sobre """
     return render(request, 'conta/sobre.html')
+
+@login_required
+def paciente_create(request, usuario_id):
+    """ Esta view é responsável por exibir os detalhes de um usuario específico """
+    usuario = get_object_or_404(Usuario, pk=usuario_id)
+
+    if request.method == 'POST':
+        paciente_form = PacienteForm(request.POST)
+        if paciente_form.is_valid():
+            paciente = paciente_form.save()
+            paciente.avaliador = usuario
+            paciente.save()
+
+            return redirect('usuario_list', usuario_id=usuario.id)
+    else:
+        paciente_form = PacienteForm()
+    context = {
+        'usuario': usuario,
+        'form_paciente': paciente_form,
+    }
+
+    return render(request, 'conta/paciente_create.html', context)
+
+@login_required
+def paciente_update(request, paciente_cpf):
+    """ Esta view é responsável por atualizar o perfil do paciente """
+    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+
+    if request.method == 'POST':
+        paciente_form = PacienteForm(request.POST, instance=paciente)
+        if paciente_form.is_valid():
+            paciente_form.save()
+
+            return redirect('usuario_list', usuario_id=paciente.avaliador.id)
+
+    else:
+        paciente_form = PacienteForm(instance=paciente)
+    context = {
+        'paciente_form': paciente_form,
+        'paciente': paciente,
+        'footer_position' : 'absolute',
+    }
+    return render(request, 'conta/paciente_update.html', context)
+
+@login_required
+def paciente_delete(request, paciente_cpf):
+    """ Esta view é responsável por deletar o paciente """
+    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    usuario_id = paciente.avaliador.id
+    mensagem = ''
+    time.sleep(1.5)
+    try:
+        paciente.delete()
+        mensagem = 'Paciente apagado com sucesso'
+        return redirect('usuario_list', usuario_id=usuario_id)
+    except:
+        context = {
+            'mensagem': mensagem
+        }
+    return render(request, 'content.html', context)

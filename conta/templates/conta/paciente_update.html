@@ -1,0 +1,21 @@
+{%extends 'menu.html'%}
+
+{%block content%}
+
+<form action="{% url 'update_paciente' paciente.cpf %}" method="post">
+    {% csrf_token %}
+    <div class="container">
+        <table class="table">
+            <tr>
+                <th>Editar paciente</th>
+            </tr>
+            <tr>
+                <td>{{paciente_form.as_p}}</td>
+            </tr>  
+          
+        </table>
+        <input type="submit" value="Salvar" class="btn btn-success">
+    </div>
+</form>
+
+{%endblock content%}

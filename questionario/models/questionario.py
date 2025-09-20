@@ -1,16 +1,10 @@
 from .base import BaseModel
 from django.db import models
+from conta.models.paciente import Paciente
 
 class Questionario(BaseModel):
 
-    nome_paciente = models.CharField(max_length=255)
-    numero_telefone = models.CharField(max_length=20)
-    email = models.EmailField()
-    cpf = models.CharField(max_length=14)
-
-
-
-    
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.nome
+        return self.paciente.nome

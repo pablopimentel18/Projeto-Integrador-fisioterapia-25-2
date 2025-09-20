@@ -29,7 +29,7 @@
         </thead>
         <tbody>
             <tr>
-                <td><a href="{% url 'usuario_list' %}" class="btn btn-primary">Clique aqui para ver os usuarios!</a></td>
+                <td><a href="{% url 'usuario_list' user.id %}" class="btn btn-primary">Clique aqui para ver os usuarios!</a></td>
             </tr>
         </tbody>
 
@@ -47,7 +47,7 @@
 
 
     <!-- PREENCHER ESSES BREAKLINES DEPOIS!!!! -->
-    <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>  
+    <br> <br> <br> <br> 
 
     {% endif %}
 </div>
