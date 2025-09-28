@@ -5,8 +5,11 @@
         <div class="col-md-8">
             <div class="card-custom">
                 <h1 class="text-center mb-4">Criar Paciente</h1> <form method="post">
+                    
                     {% csrf_token %}
-                    {{ form.as_p }} <div class="d-grid">
+                    {{ form_paciente.as_p }} 
+                    
+                    <div class="d-grid">
                         <input type="submit" value="Salvar Alterações" class="btn btn-principal btn-lg mt-3">
                     </div>
                 </form>
