@@ -1,54 +1,30 @@
-{%extends 'menu.html'%}
-{%block content%}
+{% extends 'menu.html' %}
+{% block content %}
 
-<div class="container mt-3">
-    <h3>Aqui você pode encontrar as principais </h3>
-    <div class="container me-4">
-        <h3>funcionalidades do nosso site!</h3>
+<div class="container mt-5">
+    <div class="card-custom">
+        <div class="text-center mb-5">
+            <h1>Bem-vindo ao Projeto!</h1>
+            <h3 class="text-secondary mt-2">Ferramentas e informações ao seu alcance</h3>
+        </div>
+
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                Conheça mais sobre o projeto e a equipe.
+                <a href="{% url 'sobre' %}" class="btn btn-principal">Ver Sobre</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                Veja uma lista com todos os usuários cadastrados.
+                <a href="{% url 'usuario_list' user.id %}" class="btn btn-principal">Ver Usuários</a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                Acesse e edite as informações do seu perfil.
+                <a href="{% url 'usuario_read' user.id %}" class="btn btn-principal">Ver Meu Perfil</a>
+            </li>
+            {% endif %}
+        </ul>
     </div>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Você pode ver um pouquinho sobre o projeto!</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><a href="{% url 'sobre' %}" class="btn btn-primary">Clique aqui para ver sobre!</a></td>
-            </tr>
-        </tbody>
-    </table>
-
-        {% if user.is_authenticated %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Você pode ver uma lista com todos os usuarios!</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><a href="{% url 'usuario_list' user.id %}" class="btn btn-primary">Clique aqui para ver os usuarios!</a></td>
-            </tr>
-        </tbody>
-
-        <thead>
-            <tr>
-                <th>Você pode ver o seu perfil!</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><a href="{% url 'usuario_read' user.id %}" class="btn btn-primary">Ver Perfil!</a></td>
-            </tr>
-        </tbody>
-    </table>
-
-
-    <!-- PREENCHER ESSES BREAKLINES DEPOIS!!!! -->
-    <br> <br> <br> <br> 
-
-    {% endif %}
 </div>
-{%endblock content%}
+
+{% endblock content %}

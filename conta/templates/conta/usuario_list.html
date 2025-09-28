@@ -1,43 +1,36 @@
 {% extends 'menu.html' %}
-
 {% block content %}
-<div class="container mt-3">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Usuário</th>
-                <th>Email</th>
-                <th>Telefone</th>
-                <th>CPF</th>
-                <th>Editar</th>
-                <th>Deletar</th>
-            </tr>
-        </thead>
-
-        {% for paciente in pacientes %}
-        <tbody>
-            <tr>
-                <td>{{paciente}}</td>
-                <td>{{paciente.email}}</td>
-                <td>{{paciente.numero_telefone}}</td>
-                <td>{{paciente.cpf}}</td>
-                <td><a href="{% url 'update_paciente' paciente.cpf %}" class="btn btn-warning">Editar</a></td>
-                
-                <td><a href="{% url 'paciente_delete' paciente.cpf %}" class="btn btn-danger" role="button" onclick="user_deletado()">Deletar <svg
-                            xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-pencil-square" viewBox="0 0 16 16">
-                            <path
-                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path fill-rule="evenodd"
-                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
-                        </svg></a></td>
-            </tr>
-        </tbody>
-
-        {%endfor%}
-    </table>
-
-    <a href="{% url 'create_paciente' user.id %}" class="btn btn-primary">Criar novo paciente</a>
+<div class="container mt-5">
+    <div class="card-custom">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Lista de Usuários</h1>
+            <a href="{% url 'create_paciente' user.id %}" class="btn btn-principal">Criar Novo Paciente</a>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>CPF</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for paciente in pacientes %}
+                <tr>
+                    <td>{{ paciente }}</td>
+                    <td>{{ paciente.email }}</td>
+                    <td>{{ paciente.numero_telefone }}</td>
+                    <td>{{ paciente.cpf }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'update_paciente' paciente.cpf %}" class="btn btn-secundario btn-sm">Editar</a>
+                        <a href="{% url 'paciente_delete' paciente.cpf %}" class="btn btn-danger btn-sm" onclick="user_deletado()">Deletar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
-
 {% endblock content %}

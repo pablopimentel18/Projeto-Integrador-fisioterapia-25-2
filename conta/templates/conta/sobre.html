@@ -1,37 +1,30 @@
-{% extends 'menu.html'%}
+{% extends 'menu.html' %}
 {% block content %}
-
-<div class="mt-3" style="width:100%;">
-    <h1>Informações sobre o projeto :)</h1>
-
-    <table class="table" style="width:100%;">
-        <thead>
-            <tr>
-                <th>Funcionalidade</th>
-                <th>Modelo</th>
-                <th>URLs</th>
-                <th>View</th>
-                <th>Template</th>
-                <th>Responsável</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            <tr>
-                <td>RF001 Cadastrar novo usuário</td>
-                <td>Usuário</td>
-                <td>'conta/create/'</td>
-                <td>conta_views.create_user</td>
-                <td>conta/create_user.html</td>
-                <td>Pablo Pimentel</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <br><br><br><br><br><br><br><br><br>
+<div class="container mt-5">
+    <div class="card-custom">
+        <h1 class="text-center mb-4">Informações Sobre o Projeto</h1>
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Funcionalidade</th>
+                    <th>Modelo</th>
+                    <th>URL</th>
+                    <th>View</th>
+                    <th>Template</th>
+                    <th>Responsável</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>RF001 Cadastrar novo usuário</td>
+                    <td>Usuário</td>
+                    <td>'conta/create/'</td>
+                    <td>conta_views.create_user</td>
+                    <td>conta/create_user.html</td>
+                    <td>Pablo Pimentel</td>
+                </tr>
+                </tbody>
+        </table>
+    </div>
 </div>
-
-
-
-
 {% endblock content %}

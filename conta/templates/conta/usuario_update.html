@@ -1,21 +1,17 @@
-{%extends 'menu.html'%}
-
-{%block content%}
-
-<form action="{% url 'usuario_update' user.id %}" method="post">
-    {% csrf_token %}
-    <div class="container">
-        <table class="table">
-            <tr>
-                <th>Editar usuario</th>
-            </tr>
-            <tr>
-                <td>{{usuario_form.as_p}}</td>
-            </tr>  
-          
-        </table>
-        <input type="submit" value="Salvar" class="btn btn-success">
+{% extends 'menu.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card-custom">
+                <h1 class="text-center mb-4">Update Paciente</h1> <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }} <div class="d-grid">
+                        <input type="submit" value="Salvar Alterações" class="btn btn-principal btn-lg mt-3">
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-</form>
-
-{%endblock content%}
+</div>
+{% endblock %}

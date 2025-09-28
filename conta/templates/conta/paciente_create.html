@@ -1,10 +1,17 @@
 {% extends 'menu.html' %}
-{% block content%}
-<div class="container mt-3">
-    <form action="{% url 'create_paciente' user.id %}" method="post">
-        {% csrf_token %}
-        {{form_paciente.as_p}}
-        <input type="submit" value="Submeter" class="btn btn-success">
-    </form>
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card-custom">
+                <h1 class="text-center mb-4">Criar Paciente</h1> <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }} <div class="d-grid">
+                        <input type="submit" value="Salvar Alterações" class="btn btn-principal btn-lg mt-3">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-{% endblock%}
+{% endblock %}
