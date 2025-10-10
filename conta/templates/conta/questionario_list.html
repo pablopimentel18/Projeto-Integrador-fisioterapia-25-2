@@ -1,0 +1,25 @@
+{% extends 'menu.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Questionários</title>
+</head>
+<body>
+    <h1>Lista de Questionários</h1>
+    <ul>
+        {% for questionario in questionarios %}
+            <li>{{ questionario.paciente.nome }}</li>
+
+            <li>{{ questionario.respostas}}</li>
+            <br>
+        {% empty %}
+            <li>Nenhum questionário disponível.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+{% endblock %}

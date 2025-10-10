@@ -245,8 +245,14 @@ def realizar_avaliacao(request, paciente_cpf):
 
     return render(request, 'conta/realizar_avaliacao.html', context)
  
- 
+
+@login_required
+def questionario_list(request, paciente_cpf):
+    """ Esta view é responsável por listar todos os questionarios de um paciente específico """
+    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    questionarios = Questionario.objects.filter(paciente=paciente).order_by('-data')
     context = {
+        'questionarios': questionarios,
         'paciente': paciente,
     }
-    return render(resquest, 'conta/realizar_avaliacao.html', context)
+    return render(request, 'conta/questionario_list.html', context)
