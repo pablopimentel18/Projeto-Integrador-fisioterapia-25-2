@@ -206,6 +206,7 @@ def realizar_avaliacao(request, paciente_cpf):
 
             questionario = Questionario()
             questionario.paciente = paciente
+            questionario.avaliador = paciente.avaliador
             questionario.data = timezone.now().date()
             questionario.respostas = dados_avaliacao
             questionario.save()

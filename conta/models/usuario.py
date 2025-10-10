@@ -4,7 +4,6 @@ from django.utils import timezone
 from datetime import datetime
 from django.contrib.auth.models import User
 from .base import BaseModel
-data = datetime.now()
 
 class Usuario(BaseModel):
     """A classe Corredor é responsável pelo cadastro de usuários na aplicação WEB"""
@@ -13,7 +12,7 @@ class Usuario(BaseModel):
     email = models.EmailField()
 
     numero_telefone = models.CharField(max_length=11)
-    data_nascimento = models.DateField(default=timezone.now())
+    data_nascimento = models.DateField(default="2000-01-01")
     senha = models.CharField(max_length=100)
     nome_de_usuario = models.CharField(max_length=100, validators=[MinLengthValidator(3), MaxLengthValidator(100)])
     class Meta:
