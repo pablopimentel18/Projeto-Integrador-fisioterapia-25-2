@@ -1,7 +1,9 @@
 from django.contrib import admin
 from .models import Usuario
 from .models.paciente import Paciente
+from questionario.models.questionario import Questionario
 # Register your models here.
 
 admin.site.register(Usuario)
 admin.site.register(Paciente)
+admin.site.register(Questionario)

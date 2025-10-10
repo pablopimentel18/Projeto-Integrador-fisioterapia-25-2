@@ -1,4 +1,5 @@
 from django.forms import ModelForm
+from django import forms
 from conta.models.usuario import Usuario
 from django.contrib.auth.models import User
 from conta.models.paciente import Paciente
@@ -22,5 +23,67 @@ class PacienteForm(ModelForm):
     class Meta:
         model = Paciente
 
-        fields = ['nome', 'email', 'cpf', 'numero_telefone', 'idade']
+        fields = ['nome', 'email', 'cpf', 'numero_telefone', 'idade', 'sexo']
+
+class QuestionarioSarcopeniaForm(forms.Form):
+
+
+    OPCOES_FORCA = [
+        ('0', '0 - Nenhuma dificuldade'), 
+        ('1', '1 - Alguma dificuldade'),
+        ('2', '2 - Muita dificuldade/não consegue'),]
     
+    forca = forms.ChoiceField(
+        label="Quanta dificuldade você tem para levantar e carregar 5 kg?",
+        choices=OPCOES_FORCA,
+        widget=forms.RadioSelect,
+        required=True
+    )
+
+    OPCOES_CAMINHADA = [
+        ('0', '0 - Nenhuma dificuldade'), 
+        ('1', '1 - Alguma dificuldade'),
+        ('2', '2 - Muita/Usa apoios/Incapaz'),]
+    ajuda_caminhada = forms.ChoiceField(
+        label="Quanta dificuldade você tem para atravessar um cômodo?",
+        choices=OPCOES_CAMINHADA,
+        widget=forms.RadioSelect,
+        required=True
+    )
+
+    OPCOES_LEVANTAR = [
+        ('0', '0 - Nenhuma dificuldade'), 
+        ('1', '1 - Alguma dificuldade'),
+        ('2', '2 - Muita/Não consegue sem ajuda'),]
+    
+    levantar = forms.ChoiceField(
+        label="Quanta dificuldade você tem para levantar-se de uma cama ou cadeira?",
+        choices=OPCOES_LEVANTAR,
+        widget=forms.RadioSelect,
+        required=True,)
+    
+    OPCOES_SUBIR = [
+        ('0', '0 - Nenhuma dificuldade'), 
+        ('1', '1 - Alguma dificuldade'),
+        ('2', '2 - Muita dificuldade/não consegue'),]
+    subir = forms.ChoiceField(
+        label="Quanta dificuldade você tem para subir um lance de escadas de 10 degraus?",
+        choices=OPCOES_SUBIR,
+        widget=forms.RadioSelect,
+        required=True,)
+    
+    OPCOES_QUEDA = [
+        ('0', '0 - Nenhuma'), 
+        ('1', '1 - (1 A 3) Quedas'),
+        ('2', '2 - (4 ou Mais) Quedas'),]
+    
+    queda = forms.ChoiceField(
+        label="Quantas vezes você caiu nos últimos 12 meses?",
+        choices=OPCOES_QUEDA,
+        widget=forms.RadioSelect,
+        required=True,)
+    
+    circunferencia_panturrilha = forms.IntegerField(
+        label="Medir circunferência da perna direita com paciente em pé, com os pés afastados 20cm e com as pernas relaxadas.",
+        required=True
+    )

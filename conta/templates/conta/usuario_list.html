@@ -24,6 +24,7 @@
                     <td>{{ paciente.numero_telefone }}</td>
                     <td>{{ paciente.cpf }}</td>
                     <td class="text-end">
+                        <a href="{% url 'realizar_avaliacao' paciente.cpf%}" class="btn btn-primary btn-sm">Avaliar</a>
                         <a href="{% url 'update_paciente' paciente.cpf %}" class="btn btn-secundario btn-sm">Editar</a>
                         <a href="{% url 'paciente_delete' paciente.cpf %}" class="btn btn-danger btn-sm" onclick="user_deletado()">Deletar</a>
                     </td>

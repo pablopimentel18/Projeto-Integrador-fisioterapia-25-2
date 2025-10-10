@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Realizando Avaliação de Sarcopenia para: {{ paciente.nome_completo }}</h3>
+    <hr>
+    
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <p><strong>{{ form.forca.label }}</strong></p>
+            {% for radio in form.forca %}
+                <div class="form-check">
+                    <label class="form-check-label">{{ radio.tag }} {{ radio.choice_label }}</label>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mb-3">
+            <p><strong>{{ form.ajuda_caminhada.label }}</strong></p>
+            {% for radio in form.ajuda_caminhada %}
+                <div class="form-check">
+                    <label class="form-check-label">{{ radio.tag }} {{ radio.choice_label }}</label>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            <p><strong>{{ form.levantar.label }}</strong></p>
+            {% for radio in form.levantar %}
+                <div class="form-check">
+                    <label class="form-check-label">{{ radio.tag }} {{ radio.choice_label }}</label>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            <p><strong>{{ form.subir.label }}</strong></p>
+            {% for radio in form.subir %}
+                <div class="form-check">
+                    <label class="form-check-label">{{ radio.tag }} {{ radio.choice_label }}</label>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            <p><strong>{{ form.queda.label }}</strong></p>
+            {% for radio in form.queda %}
+                <div class="form-check">
+                    <label class="form-check-label">{{ radio.tag }} {{ radio.choice_label }}</label>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">{{ form.circunferencia_panturrilha.label }}</label>
+            {{ form.circunferencia_panturrilha }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Salvar Avaliação</button>
+    </form>
+</div>
+{% endblock %}

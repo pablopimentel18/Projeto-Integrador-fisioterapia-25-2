@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from conta.models.usuario import *
 from conta.models.paciente import Paciente
-from .forms import UserForm, UsuarioForm, PacienteForm
+from questionario.models.questionario import Questionario
+from .forms import UserForm, UsuarioForm, PacienteForm, QuestionarioSarcopeniaForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -191,3 +192,60 @@ def paciente_delete(request, paciente_cpf):
             'mensagem': mensagem
         }
     return render(request, 'content.html', context)
+
+@login_required
+def realizar_avaliacao(request, paciente_cpf):
+    """ Esta view é responsável por realizar a avaliação do paciente """
+    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    pontuacao = 0
+    if request.method == 'POST':
+        form = QuestionarioSarcopeniaForm(request.POST)
+
+        if form.is_valid():
+            dados_avaliacao = form.cleaned_data
+
+            questionario = Questionario()
+            questionario.paciente = paciente
+            questionario.data = timezone.now().date()
+            questionario.respostas = dados_avaliacao
+            questionario.save()
+
+            dados_avaliacao.values()
+            for resposta in dados_avaliacao.values():
+
+                if int(resposta) <=2:
+                    pontuacao += int(resposta)
+                
+                else:
+                    if(paciente.sexo == 'F'):
+                        if(int(resposta) < 33):
+                            pontuacao += 0
+                        else:
+                            pontuacao +=10
+                    else:
+                        if(int(resposta) < 34):
+                            pontuacao += 0
+                        else:
+                            pontuacao +=10
+
+            if(pontuacao>=11):
+                return render(request, 'conta/avaliacao_segunda_etapa.html', {'paciente': paciente, 'pontuacao': pontuacao, 'resultado': 'Alta probabilidade de sarcopenia'})
+
+
+            return redirect('usuario_list', usuario_id=paciente.avaliador.id)
+ 
+    else:
+        form = QuestionarioSarcopeniaForm()
+    
+    context = {
+        'form': form,
+        'paciente': paciente,
+    }
+
+    return render(request, 'conta/realizar_avaliacao.html', context)
+ 
+ 
+    context = {
+        'paciente': paciente,
+    }
+    return render(resquest, 'conta/realizar_avaliacao.html', context)

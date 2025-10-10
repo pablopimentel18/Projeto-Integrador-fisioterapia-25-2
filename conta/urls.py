@@ -13,4 +13,5 @@ urlpatterns = [
     path('paciente/create/<int:usuario_id>/', conta_views.paciente_create, name='create_paciente'),
     path('paciente/update/<str:paciente_cpf>/', conta_views.paciente_update, name='update_paciente'),
     path('paciente/delete/<str:paciente_cpf>/', conta_views.paciente_delete, name='paciente_delete'),
+    path('paciente/avaliar/<str:paciente_cpf>/', conta_views.realizar_avaliacao, name='realizar_avaliacao'),
 ]
