@@ -39,7 +39,9 @@ def create_user(request):
             print(user.password)
             user.save()
             print(user.password)
+
             form_instante = Usuario()
+
             form_instante.id = user_id
             form_instante.user = user
 
@@ -140,8 +142,22 @@ def paciente_create(request, usuario_id):
 
     if request.method == 'POST':
         paciente_form = PacienteForm(request.POST)
+        qtd_pacientes = Paciente.objects.count()
+
+
         if paciente_form.is_valid():
-            paciente = paciente_form.save()
+            pc = paciente_form.cleaned_data
+            paciente = Paciente()
+            paciente.id = (qtd_pacientes + 1)
+            paciente.nome = pc['nome']
+            paciente.email = pc['email']
+            paciente.cpf = pc['cpf']
+            paciente.numero_telefone = pc['numero_telefone']
+            paciente.idade = pc['idade']
+            paciente.sexo = pc['sexo']
+            paciente.raca = pc['raca']
+            paciente.estatura = pc['estatura']
+            paciente.peso = pc['peso']
             paciente.avaliador = usuario
             paciente.save()
 
@@ -214,12 +230,14 @@ def primeira_etapa_avaliacao(request, paciente_cpf):
         if form.is_valid():
             dados_avaliacao = form.cleaned_data
 
+            qtd_questionarios = Questionario.objects.count()
             questionario = Questionario()
+            questionario.id = (qtd_questionarios+1)
             questionario.paciente = paciente
             questionario.avaliador = paciente.avaliador
             questionario.data = timezone.now().date()
             questionario.respostas = dados_avaliacao
-
+            questionario.save()
             dados_avaliacao.values()
             for resposta in dados_avaliacao.values():
 
@@ -239,6 +257,7 @@ def primeira_etapa_avaliacao(request, paciente_cpf):
                             pontuacao +=10
 
             if(pontuacao>=11):
+                questionario.save()
                 return redirect('avaliar_segunda_etapa', paciente_cpf=paciente.cpf)
 
             questionario.diagnostico = 'Paciente sem sarcopenia'
@@ -300,7 +319,7 @@ def segunda_etapa_avaliacao(request, paciente_cpf):
 
             questionario.diagnostico = 'Paciente sem sarcopenia'
             questionario.save()
-            return redirect('usuario_list', usuario_id=paciente.avaliador.id)
+            return redirect('diagnostico', paciente_cpf=paciente.cpf)
  
     else:
         form = QuestionarioSegundaEtapaForm()
@@ -357,7 +376,7 @@ def terceira_etapa_avaliacao(request, paciente_cpf):
 
                 if paciente.sexo == 'F':
 
-                    immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100)) - (0.098 * paciente.idade) + (raca -3.3))/((paciente.estatura/100)*(paciente.estatura/100))
+                    immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100.0)) - (0.098 * paciente.idade) + (raca -3.3))/((paciente.estatura/100)*(paciente.estatura/100))
 
                     if immea < 6.4:
                         resultado = 'Baixa massa muscular esquelética dos membros inferiores pelo IMMEA'
@@ -365,7 +384,7 @@ def terceira_etapa_avaliacao(request, paciente_cpf):
                     else:
                         resultado = 'Massa muscular esquelética dos membros inferiores normal pelo IMMEA'
                 else:
-                    immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100)) + (6,6 * 1) - (0.098 * paciente.idade) + (raca -3.3))/((paciente.estatura/100)*(paciente.estatura/100))
+                    immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100)) + (6.6 * 1) - (0.098 * paciente.idade) + (raca -3.3))/((paciente.estatura/100)*(paciente.estatura/100))
                     if immea < 8.9:
                         resultado = 'Baixa massa muscular esquelética dos membros inferiores pelo IMMEA'
                         quarta = True
@@ -378,8 +397,7 @@ def terceira_etapa_avaliacao(request, paciente_cpf):
 
         questionario.diagnostico = 'Provável sarcopenia'
         questionario.save()
-        return redirect('usuario_list', usuario_id=paciente.avaliador.id)
-
+        return redirect('diagnostico', paciente_cpf=paciente.cpf)
  
     else:
         form = QuestionarioTerceiraEtapaForm()
@@ -417,7 +435,7 @@ def quarta_etapa_avaliacao(request, paciente_cpf):
             questionario.save()
             return redirect('diagnostico', paciente_cpf=paciente.cpf)
 
-        return redirect('usuario_list', usuario_id=paciente.avaliador.id)   
+        return redirect('diagnostico', paciente_cpf=paciente.cpf) 
 
     else: 
         form = QuestionarioQuartaEtapaForm()
