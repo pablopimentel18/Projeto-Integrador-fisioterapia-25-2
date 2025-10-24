@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from conta.models.usuario import *
 from conta.models.paciente import Paciente
 from questionario.models.questionario import Questionario
-from .forms import QuestionarioSegundaEtapaForm, UserForm, UsuarioForm, PacienteForm, QuestionarioSarcopeniaForm
+from .forms import QuestionarioSegundaEtapaForm, QuestionarioTerceiraEtapaForm, UserForm, UsuarioForm, PacienteForm, QuestionarioSarcopeniaForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -311,15 +311,56 @@ def segunda_etapa_avaliacao(request, paciente_cpf):
     return render(request, 'conta/segunda_etapa_avaliacao.html', context)
 
 @login_required
-def terceria_etapa_avaliacao(request, paciente_cpf):
+def terceira_etapa_avaliacao(request, paciente_cpf):
     """ Esta view é responsável por realizar a terceira etapa da avaliação do paciente """
     paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
     questionario = Questionario.objects.filter(paciente=paciente).latest('data')
 
     if request.method == 'POST':
-        circunferencia = request.POST.get('circunferencia_panturrilha')
-        questionario.respostas.update({'circunferencia_panturrilha': circunferencia})
-        questionario.save()
+        form = QuestionarioTerceiraEtapaForm(request.POST)
+
+        if form.is_valid():
+            dados_avalicao = form.cleaned_data
+            questionario.respostas.update(dados_avalicao)
+            questionario.save()
+
+            escolha = dados_avalicao.get('terceira_etapa')
+            valor = dados_avalicao.get('valor_terceira_etapa')
+            quarta = False 
+
+            if escolha == 'MMEA':
+                
+                if paciente.sexo == 'F':
+                    if valor < 20:
+                        resultado = 'Baixa massa muscular esquelética dos membros inferiores'
+                        quarta = True
+                    else:
+                        resultado = 'Massa muscular esquelética dos membros inferiores normal'
+                        
+                else:
+                    if valor < 15:
+                        resultado = 'Baixa massa muscular esquelética dos membros inferiores'
+                        quarta = True
+                    else:
+                        resultado = 'Massa muscular esquelética dos membros inferiores normal'
+
+            else : 
+                
+                if paciente.sexo == 'F':
+                    immea = (valor - (0.02 * paciente.idade)) - (0.191 * paciente.peso) + (0.107 * paciente.estatura) + 4.15
+                    if immea < 6:
+                        resultado = 'Baixa massa muscular esquelética dos membros inferiores pelo IMMEA'
+                        quarta = True
+                    else:
+                        resultado = 'Massa muscular esquelética dos membros inferiores normal pelo IMMEA'
+                else:
+                    immea = (valor - (0.03 * paciente.idade)) - (0.193 * paciente.peso) + (0.107 * paciente.estatura) + 4.15
+                    if immea < 7:
+                        resultado = 'Baixa massa muscular esquelética dos membros inferiores pelo IMMEA'
+                        quarta = True
+                    else:
+                        resultado = 'Massa muscular esquelética dos membros inferiores normal pelo IMMEA'
+            
 
         return redirect('usuario_list', usuario_id=paciente.avaliador.id)
 

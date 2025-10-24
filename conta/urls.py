@@ -16,5 +16,7 @@ urlpatterns = [
     path('paciente/avaliar/<str:paciente_cpf>/', conta_views.tipo_avaliacao, name='avaliacao_tipo'),
     path('paciente/avaliar/<str:paciente_cpf>/primeira_etapa/', conta_views.primeira_etapa_avaliacao, name='avaliar_primeira_etapa'),
     path('paciente/avaliar/<str:paciente_cpf>/segunda_etapa/', conta_views.segunda_etapa_avaliacao, name='avaliar_segunda_etapa'),
+    path('paciente/avaliar/<str:paciente_cpf>/terceira_etapa/', conta_views.terceira_etapa_avaliacao, name='avaliar_terceira_etapa'),
+    path('paciente/avaliar/<str:paciente_cpf>/sarcopenia/', conta_views.quarta_etapa_avaliacao, name='avaliar_quarta_etapa'),
     path('paciente/avaliacoes/<str:paciente_cpf>/', conta_views.questionario_list, name='listar_avaliacoes'),
 ]

@@ -23,7 +23,7 @@ class PacienteForm(ModelForm):
     class Meta:
         model = Paciente
 
-        fields = ['nome', 'email', 'cpf', 'numero_telefone', 'idade', 'sexo']
+        fields = ['nome', 'email', 'cpf', 'numero_telefone', 'idade', 'sexo', 'raca', 'estatura', 'peso']
 
 class QuestionarioSarcopeniaForm(forms.Form):
 
@@ -111,12 +111,12 @@ class QuestionarioSegundaEtapaForm(forms.Form):
 class QuestionarioTerceiraEtapaForm(forms.Form):
 
     OPCOES_TERCEIRA_ETAPA = [
-        ('Levantar/Sentar', 'Levantar/Sentar de uma cadeira sem usar os braços 5 vezes'),
-        ('Forca Preensar', 'Forca Preensar com dinafodose')
+        ('MMEA', 'Peso da massa esqueletica dos membros inferiores (MMEA)'),
+        ('Equacao de Lee', 'Calcula o IMMEA usando a equação de Lee et al.'),
     ]
 
     terceira_etapa = forms.ChoiceField(
-        label="Selecione a avaliação da segunda etapa:",
+        label="Selecione a avaliação da terceira etapa:",
         choices=OPCOES_TERCEIRA_ETAPA,
         widget=forms.RadioSelect,
         required=True
@@ -124,5 +124,5 @@ class QuestionarioTerceiraEtapaForm(forms.Form):
 
     valor_terceira_etapa = forms.IntegerField(
         label="Insira o valor obtido na avaliação selecionada:",
-        required=True
+        required=False
     )
