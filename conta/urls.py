@@ -13,6 +13,8 @@ urlpatterns = [
     path('paciente/create/<int:usuario_id>/', conta_views.paciente_create, name='create_paciente'),
     path('paciente/update/<str:paciente_cpf>/', conta_views.paciente_update, name='update_paciente'),
     path('paciente/delete/<str:paciente_cpf>/', conta_views.paciente_delete, name='paciente_delete'),
-    path('paciente/avaliar/<str:paciente_cpf>/', conta_views.realizar_avaliacao, name='realizar_avaliacao'),
+    path('paciente/avaliar/<str:paciente_cpf>/', conta_views.tipo_avaliacao, name='avaliacao_tipo'),
+    path('paciente/avaliar/<str:paciente_cpf>/primeira_etapa/', conta_views.primeira_etapa_avaliacao, name='avaliar_primeira_etapa'),
+    path('paciente/avaliar/<str:paciente_cpf>/segunda_etapa/', conta_views.segunda_etapa_avaliacao, name='avaliar_segunda_etapa'),
     path('paciente/avaliacoes/<str:paciente_cpf>/', conta_views.questionario_list, name='listar_avaliacoes'),
 ]

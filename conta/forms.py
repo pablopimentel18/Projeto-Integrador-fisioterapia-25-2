@@ -87,3 +87,42 @@ class QuestionarioSarcopeniaForm(forms.Form):
         label="Medir circunferência da perna direita com paciente em pé, com os pés afastados 20cm e com as pernas relaxadas.",
         required=True
     )
+
+
+class QuestionarioSegundaEtapaForm(forms.Form):
+
+    OPCOES_SEGUNDA_ETAPA = [
+        ('Levantar/Sentar', 'Levantar/Sentar de uma cadeira sem usar os braços 5 vezes'),
+        ('Forca Preensar', 'Forca Preensar com dinafodose')
+    ]
+
+    segunda_etapa = forms.ChoiceField(
+        label="Selecione a avaliação da segunda etapa:",
+        choices=OPCOES_SEGUNDA_ETAPA,
+        widget=forms.RadioSelect,
+        required=True
+    )
+
+    valor_segunda_etapa = forms.IntegerField(
+        label="Insira o valor obtido na avaliação selecionada:",
+        required=True
+    )
+
+class QuestionarioTerceiraEtapaForm(forms.Form):
+
+    OPCOES_TERCEIRA_ETAPA = [
+        ('Levantar/Sentar', 'Levantar/Sentar de uma cadeira sem usar os braços 5 vezes'),
+        ('Forca Preensar', 'Forca Preensar com dinafodose')
+    ]
+
+    terceira_etapa = forms.ChoiceField(
+        label="Selecione a avaliação da segunda etapa:",
+        choices=OPCOES_TERCEIRA_ETAPA,
+        widget=forms.RadioSelect,
+        required=True
+    )
+
+    valor_terceira_etapa = forms.IntegerField(
+        label="Insira o valor obtido na avaliação selecionada:",
+        required=True
+    )

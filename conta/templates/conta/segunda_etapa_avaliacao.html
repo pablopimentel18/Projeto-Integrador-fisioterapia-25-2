@@ -1,0 +1,29 @@
+{% extends 'menu.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Realizando Avaliação de Sarcopenia para: {{ paciente.nome }}</h3>
+    <hr>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <p><strong>{{ form.segunda_etapa.label }}</strong></p>
+            {% for radio in form.segunda_etapa %}
+                <div class="form-check">
+                    <label class="form-check-label">{{ radio.tag }} {{ radio.choice_label }}</label>
+                </div>
+            {% endfor %}
+        </div>
+       
+        <div class="mb-3">
+            <label class="form-label">{{ form.valor_segunda_etapa.label }}</label>
+            {{ form.valor_segunda_etapa }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Salvar Avaliação</button>
+    </form>
+     
+    
+</div>
+{% endblock %}

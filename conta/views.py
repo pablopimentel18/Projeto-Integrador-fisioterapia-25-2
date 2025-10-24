@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from conta.models.usuario import *
 from conta.models.paciente import Paciente
 from questionario.models.questionario import Questionario
-from .forms import UserForm, UsuarioForm, PacienteForm, QuestionarioSarcopeniaForm
+from .forms import QuestionarioSegundaEtapaForm, UserForm, UsuarioForm, PacienteForm, QuestionarioSarcopeniaForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -194,7 +194,17 @@ def paciente_delete(request, paciente_cpf):
     return render(request, 'content.html', context)
 
 @login_required
-def realizar_avaliacao(request, paciente_cpf):
+def tipo_avaliacao(request, paciente_cpf): 
+    """ Esta view é responsável por escolher o tipo de avaliação do paciente """
+    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    context = {
+        'paciente': paciente,
+    }
+    return render(request, 'conta/tipo_avaliacao.html', context)
+
+
+@login_required
+def primeira_etapa_avaliacao(request, paciente_cpf):
     """ Esta view é responsável por realizar a avaliação do paciente """
     paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
     pontuacao = 0
@@ -230,8 +240,7 @@ def realizar_avaliacao(request, paciente_cpf):
                             pontuacao +=10
 
             if(pontuacao>=11):
-                return render(request, 'conta/avaliacao_segunda_etapa.html', {'paciente': paciente, 'pontuacao': pontuacao, 'resultado': 'Alta probabilidade de sarcopenia'})
-
+                return redirect('avaliar_segunda_etapa', paciente_cpf=paciente.cpf)
 
             return redirect('usuario_list', usuario_id=paciente.avaliador.id)
  
@@ -243,8 +252,94 @@ def realizar_avaliacao(request, paciente_cpf):
         'paciente': paciente,
     }
 
-    return render(request, 'conta/realizar_avaliacao.html', context)
+    return render(request, 'conta/primeira_etapa_avaliacao.html', context)
+
+def segunda_etapa_avaliacao(request, paciente_cpf):
+    """ Esta view é responsável por realizar a segunda etapa da avaliação do paciente """
+    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    questionario = Questionario.objects.filter(paciente=paciente).latest('data')
+
+    if request.method == 'POST':
+        form = QuestionarioSegundaEtapaForm(request.POST)
+
+        if form.is_valid():
+            dados_avalicao = form.cleaned_data
+            questionario.respostas.update(dados_avalicao)
+            questionario.save()
+            escolha = dados_avalicao.get('segunda_etapa_avaliacao')
+            valor = dados_avalicao.get('valor_segunda_etapa')
+            terceira = False
+
+            if escolha == 'Forca Preensar':
+                
+                if paciente.sexo == 'F':
+                    if valor < 16:
+                        resultado = 'Baixa força de preensão manual'
+                        terceira = True
+                    else:
+                        resultado = 'Força de preensão manual normal'
+                        
+                else:
+                    if valor < 27:
+                        resultado = 'Baixa força de preensão manual'
+                        terceira = True
+                    else:
+                        resultado = 'Força de preensão manual normal'
+
+            else : 
+                
+                if valor > 15:
+                    resultado = 'Desempenho funcional normal'
+                else:
+                    resultado = 'Desempenho funcional reduzido'
+                    terceira = True
+        
+            if terceira:
+                return redirect('avaliar_terceira_etapa', paciente_cpf=paciente.cpf)
+
+
+            return redirect('usuario_list', usuario_id=paciente.avaliador.id)
  
+    else:
+        form = QuestionarioSegundaEtapaForm()
+    
+    context = {
+        'form': form,
+        'paciente': paciente,
+    }
+
+    return render(request, 'conta/segunda_etapa_avaliacao.html', context)
+
+@login_required
+def terceria_etapa_avaliacao(request, paciente_cpf):
+    """ Esta view é responsável por realizar a terceira etapa da avaliação do paciente """
+    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    questionario = Questionario.objects.filter(paciente=paciente).latest('data')
+
+    if request.method == 'POST':
+        circunferencia = request.POST.get('circunferencia_panturrilha')
+        questionario.respostas.update({'circunferencia_panturrilha': circunferencia})
+        questionario.save()
+
+        return redirect('usuario_list', usuario_id=paciente.avaliador.id)
+
+    context = {
+        'paciente': paciente,
+    }
+
+    return render(request, 'conta/terceira_etapa_avaliacao.html', context)
+
+@login_required
+def quarta_etapa_avaliacao(request, paciente_cpf):
+    """ Esta view é responsável por realizar a quarta etapa da avaliação do paciente """
+    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    questionario = Questionario.objects.filter(paciente=paciente).latest('data')
+
+    context = {
+        'paciente': paciente,
+    }
+
+    return render(request, 'conta/quarta_etapa_avaliacao.html', context)
 
 @login_required
 def questionario_list(request, paciente_cpf):

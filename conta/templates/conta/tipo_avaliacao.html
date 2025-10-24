@@ -1,0 +1,15 @@
+{% extends 'menu.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card-custom">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Tipo de Avaliação</h1>
+            <!-- <a href="{% url 'usuario_list' paciente.avaliador.id %}" class="btn btn-principal">Voltar para Lista de Usuários</a> --> 
+        </div>
+        <div class="d-flex flex-column gap-3">
+            <a href="{% url 'avaliar_primeira_etapa' paciente.cpf %}" class="btn btn-primary btn-lg">Primeira Etapa de Avaliação</a>
+            <!-- Adicione mais botões para outros tipos de avaliação conforme necessário -->
+        </div>
+    </div>
+</div>
+{% endblock content %}
