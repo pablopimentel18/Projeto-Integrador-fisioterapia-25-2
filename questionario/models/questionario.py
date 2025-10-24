@@ -8,5 +8,6 @@ class Questionario(BaseModel):
     avaliador = models.ForeignKey(Usuario, on_delete=models.CASCADE, blank=True, null=True)
     data = models.DateField()
     respostas = models.JSONField()
+    diagnostico = models.CharField(max_length=255, blank=True, null=True)
     def __str__(self):
         return self.paciente.nome

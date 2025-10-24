@@ -1,0 +1,15 @@
+{% extends 'menu.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Diagnóstico de Sarcopenia para: {{ paciente.nome }}</h3>
+    <hr>
+    <div class="mb-3">
+        <p><strong>Resultado da Avaliação:</strong></p>
+        <p>{{ diagnostico }}</p>
+    </div>
+
+
+    
+</div>
+{% endblock %}

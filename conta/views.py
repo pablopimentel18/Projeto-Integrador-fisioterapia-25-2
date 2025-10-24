@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from conta.models.usuario import *
 from conta.models.paciente import Paciente
 from questionario.models.questionario import Questionario
-from .forms import QuestionarioSegundaEtapaForm, QuestionarioTerceiraEtapaForm, UserForm, UsuarioForm, PacienteForm, QuestionarioSarcopeniaForm
+from .forms import QuestionarioSegundaEtapaForm, QuestionarioTerceiraEtapaForm, UserForm, UsuarioForm, PacienteForm, QuestionarioSarcopeniaForm, QuestionarioQuartaEtapaForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -219,7 +219,6 @@ def primeira_etapa_avaliacao(request, paciente_cpf):
             questionario.avaliador = paciente.avaliador
             questionario.data = timezone.now().date()
             questionario.respostas = dados_avaliacao
-            questionario.save()
 
             dados_avaliacao.values()
             for resposta in dados_avaliacao.values():
@@ -242,7 +241,9 @@ def primeira_etapa_avaliacao(request, paciente_cpf):
             if(pontuacao>=11):
                 return redirect('avaliar_segunda_etapa', paciente_cpf=paciente.cpf)
 
-            return redirect('usuario_list', usuario_id=paciente.avaliador.id)
+            questionario.diagnostico = 'Paciente sem sarcopenia'
+            questionario.save()
+            return redirect('diagnostico', paciente_cpf=paciente.cpf)
  
     else:
         form = QuestionarioSarcopeniaForm()
@@ -297,7 +298,8 @@ def segunda_etapa_avaliacao(request, paciente_cpf):
             if terceira:
                 return redirect('avaliar_terceira_etapa', paciente_cpf=paciente.cpf)
 
-
+            questionario.diagnostico = 'Paciente sem sarcopenia'
+            questionario.save()
             return redirect('usuario_list', usuario_id=paciente.avaliador.id)
  
     else:
@@ -345,27 +347,46 @@ def terceira_etapa_avaliacao(request, paciente_cpf):
                         resultado = 'Massa muscular esquelética dos membros inferiores normal'
 
             else : 
-                
+
+                if paciente.raca == 'B':
+                    raca = 0
+                elif paciente.raca == 'P':
+                    raca = 1.4
+                else:
+                    raca = -1.2
+
                 if paciente.sexo == 'F':
-                    immea = (valor - (0.02 * paciente.idade)) - (0.191 * paciente.peso) + (0.107 * paciente.estatura) + 4.15
-                    if immea < 6:
+
+                    immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100)) - (0.098 * paciente.idade) + (raca -3.3))/((paciente.estatura/100)*(paciente.estatura/100))
+
+                    if immea < 6.4:
                         resultado = 'Baixa massa muscular esquelética dos membros inferiores pelo IMMEA'
                         quarta = True
                     else:
                         resultado = 'Massa muscular esquelética dos membros inferiores normal pelo IMMEA'
                 else:
-                    immea = (valor - (0.03 * paciente.idade)) - (0.193 * paciente.peso) + (0.107 * paciente.estatura) + 4.15
-                    if immea < 7:
+                    immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100)) + (6,6 * 1) - (0.098 * paciente.idade) + (raca -3.3))/((paciente.estatura/100)*(paciente.estatura/100))
+                    if immea < 8.9:
                         resultado = 'Baixa massa muscular esquelética dos membros inferiores pelo IMMEA'
                         quarta = True
                     else:
                         resultado = 'Massa muscular esquelética dos membros inferiores normal pelo IMMEA'
-            
 
+            
+            if quarta:
+                return redirect('avaliar_quarta_etapa', paciente_cpf=paciente.cpf)    
+
+        questionario.diagnostico = 'Provável sarcopenia'
+        questionario.save()
         return redirect('usuario_list', usuario_id=paciente.avaliador.id)
 
+ 
+    else:
+        form = QuestionarioTerceiraEtapaForm()
+    
     context = {
         'paciente': paciente,
+        'form': form,
     }
 
     return render(request, 'conta/terceira_etapa_avaliacao.html', context)
@@ -376,11 +397,61 @@ def quarta_etapa_avaliacao(request, paciente_cpf):
     paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
     questionario = Questionario.objects.filter(paciente=paciente).latest('data')
 
+
+    if request.method == 'POST':
+        form = QuestionarioQuartaEtapaForm(request.POST)
+    
+        if form.is_valid():
+            dados_avalicao = form.cleaned_data
+            questionario.respostas.update(dados_avalicao)
+            questionario.save()
+
+            tempo = dados_avalicao.get('valor_quarta_etapa')
+            if((4/tempo) <= 0.8):
+                grave=True
+                questionario.diagnostico = 'Sarcopenia grave'
+            else:
+                grave=False
+                questionario.diagnostico = 'Sarcopenia'
+
+            questionario.save()
+            return redirect('diagnostico', paciente_cpf=paciente.cpf)
+
+        return redirect('usuario_list', usuario_id=paciente.avaliador.id)   
+
+    else: 
+        form = QuestionarioQuartaEtapaForm()
+
+
     context = {
         'paciente': paciente,
+        'form': form,
     }
 
     return render(request, 'conta/quarta_etapa_avaliacao.html', context)
+
+@login_required
+def diagnostico(request, paciente_cpf):
+    """ Esta view é responsável por exibir o diagnóstico final do paciente """
+    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    questionario = Questionario.objects.filter(paciente=paciente).latest('data')
+    respostas = questionario.respostas
+    diagnostico = questionario.diagnostico
+    grave = False
+
+    if 'valor_quarta_etapa' in respostas:
+        tempo = respostas.get('valor_quarta_etapa')
+        if((4/tempo) <= 0.8):
+            grave=True
+
+
+    context = {
+        'paciente': paciente,
+        'respostas': respostas,
+        'diagnostico': diagnostico,
+    }
+
+    return render(request, 'conta/diagnostico.html', context)
 
 @login_required
 def questionario_list(request, paciente_cpf):

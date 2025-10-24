@@ -126,3 +126,10 @@ class QuestionarioTerceiraEtapaForm(forms.Form):
         label="Insira o valor obtido na avaliação selecionada:",
         required=False
     )
+
+class QuestionarioQuartaEtapaForm(forms.Form):
+
+    valor_quarta_etapa = forms.IntegerField(
+        label="Insira o tempo (em segundos) para completar o teste de caminhada de 4 metros:",
+        required=True
+    )
