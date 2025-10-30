@@ -93,7 +93,7 @@ class QuestionarioSegundaEtapaForm(forms.Form):
 
     OPCOES_SEGUNDA_ETAPA = [
         ('Levantar/Sentar', 'Levantar/Sentar de uma cadeira sem usar os braços 5 vezes'),
-        ('Forca Preensar', 'Forca Preensar com dinafodose')
+        ('Forca Preensar', 'Forca Preensar com dinamômetro')
     ]
 
     segunda_etapa = forms.ChoiceField(

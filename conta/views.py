@@ -265,10 +265,10 @@ def primeira_etapa_avaliacao(request, paciente_id):
                 messages.success(request, resultado_texto)
                 return redirect('avaliar_segunda_etapa', questionario_id=questionario.id)
 
-            questionario.diagnostico = 'Paciente sem sarcopenia'
+            questionario.diagnostico = 'Paciente sem sarcopenia.'
             questionario.save()
 
-            resultado_texto = "Paciente Sem Sarcopenia!!"
+            resultado_texto = "Paciente Sem Sarcopenia"
 
             messages.success(request, resultado_texto)
 
@@ -281,9 +281,6 @@ def primeira_etapa_avaliacao(request, paciente_id):
         'form': form,
         'paciente': paciente,
     }
-    resultado_texto = "Paciente Atingiu mais de 11 pontos.\nReferente à potencial diagnóstico de Sarcopenia!."
-
-    messages.success(request, resultado_texto)
     return render(request, 'conta/primeira_etapa_avaliacao.html', context)
 
 def segunda_etapa_avaliacao(request, questionario_id):
@@ -320,7 +317,7 @@ def segunda_etapa_avaliacao(request, questionario_id):
 
             else : 
                 
-                if valor > 15:
+                if valor < 15:
                     resultado = 'Desempenho funcional normal'
                 else:
                     resultado = 'Desempenho funcional reduzido'
@@ -336,10 +333,10 @@ def segunda_etapa_avaliacao(request, questionario_id):
 
                 return redirect('avaliar_terceira_etapa', questionario_id=questionario.id)
 
-            questionario.diagnostico = 'Paciente sem sarcopenia'
+            questionario.diagnostico = 'Paciente sem sarcopenia.'
             questionario.save()
 
-            resultado_texto = "Não há Sarcopenia!!"
+            resultado_texto = "Paciente sem sarcopenia"
 
             messages.success(request, resultado_texto)
             return redirect('diagnostico', questionario_id=questionario.id)
@@ -427,7 +424,7 @@ def terceira_etapa_avaliacao(request, questionario_id):
         questionario.diagnostico = 'Provável sarcopenia'
         questionario.save()
 
-        resultado_texto = "Não há Sarcopenia!!"
+        resultado_texto = "Provável Sarcopenia"
 
         messages.success(request, resultado_texto)
 
@@ -461,12 +458,15 @@ def quarta_etapa_avaliacao(request, questionario_id):
             tempo = dados_avalicao.get('valor_quarta_etapa')
             if((4/tempo) <= 0.8):
                 grave=True
-                questionario.diagnostico = 'Sarcopenia grave'
+                questionario.diagnostico = 'Sarcopenia grave.'
+                resultado_texto = "Sarcopenia grave"
             else:
                 grave=False
-                questionario.diagnostico = 'Sarcopenia'
+                questionario.diagnostico = 'Sarcopenia confirmada.'
+                resultado_texto = "Sarcopenia confirmada"
 
             questionario.save()
+            messages.success(request, resultado_texto)
             return redirect('diagnostico', questionario_id=questionario.id)
 
         return redirect('diagnostico', questionario_id=questionario.id) 

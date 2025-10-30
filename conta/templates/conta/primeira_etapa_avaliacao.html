@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'menu.html' %}
 {% block content %}
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -8,7 +8,7 @@
             <script>
                 Swal.fire({
                     title: 'Atenção!',
-                    text: '{{ message }}', 
+                    text: '{{ message|escapejs }}', 
                     icon: 'warning' 
                 });
         </script>

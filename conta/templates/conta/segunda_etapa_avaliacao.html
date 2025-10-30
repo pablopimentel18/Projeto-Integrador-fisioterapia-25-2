@@ -9,7 +9,7 @@
             <script>
                 Swal.fire({
                     title: 'Atenção!',
-                    text: '{{ message }}', 
+                    text: '{{ message|escapejs }}', 
                     icon: 'warning' 
                 });
         </script>
