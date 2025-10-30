@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from conta.models.usuario import *
+from conta.models.usuario import Usuario
 from conta.models.paciente import Paciente
 from questionario.models.questionario import Questionario
 from .forms import QuestionarioSegundaEtapaForm, QuestionarioTerceiraEtapaForm, UserForm, UsuarioForm, PacienteForm, QuestionarioSarcopeniaForm, QuestionarioQuartaEtapaForm
@@ -9,7 +9,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
 from django import template
 from django.template.defaultfilters import stringfilter
+from django.utils import timezone
 import time
+from django.contrib import messages
 
 register = template.Library()
 
@@ -172,9 +174,9 @@ def paciente_create(request, usuario_id):
     return render(request, 'conta/paciente_create.html', context)
 
 @login_required
-def paciente_update(request, paciente_cpf):
+def paciente_update(request, paciente_id):
     """ Esta view é responsável por atualizar o perfil do paciente """
-    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    paciente = get_object_or_404(Paciente, id=paciente_id)
 
     if request.method == 'POST':
         paciente_form = PacienteForm(request.POST, instance=paciente)
@@ -193,9 +195,9 @@ def paciente_update(request, paciente_cpf):
     return render(request, 'conta/paciente_update.html', context)
 
 @login_required
-def paciente_delete(request, paciente_cpf):
+def paciente_delete(request, paciente_id):
     """ Esta view é responsável por deletar o paciente """
-    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    paciente = get_object_or_404(Paciente, id=paciente_id)
     usuario_id = paciente.avaliador.id
     mensagem = ''
     time.sleep(1.5)
@@ -210,9 +212,9 @@ def paciente_delete(request, paciente_cpf):
     return render(request, 'content.html', context)
 
 @login_required
-def tipo_avaliacao(request, paciente_cpf): 
+def tipo_avaliacao(request, paciente_id): 
     """ Esta view é responsável por escolher o tipo de avaliação do paciente """
-    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    paciente = get_object_or_404(Paciente, id=paciente_id)
     context = {
         'paciente': paciente,
     }
@@ -220,9 +222,9 @@ def tipo_avaliacao(request, paciente_cpf):
 
 
 @login_required
-def primeira_etapa_avaliacao(request, paciente_cpf):
+def primeira_etapa_avaliacao(request, paciente_id):
     """ Esta view é responsável por realizar a avaliação do paciente """
-    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    paciente = get_object_or_404(Paciente, id=paciente_id)
     pontuacao = 0
     if request.method == 'POST':
         form = QuestionarioSarcopeniaForm(request.POST)
@@ -258,11 +260,21 @@ def primeira_etapa_avaliacao(request, paciente_cpf):
 
             if(pontuacao>=11):
                 questionario.save()
-                return redirect('avaliar_segunda_etapa', paciente_cpf=paciente.cpf)
+
+                resultado_texto = "Paciente Atingiu mais de 11 pontos.\nReferente à potencial diagnóstico de Sarcopenia!."
+
+                messages.success(request, resultado_texto)
+
+                return redirect('avaliar_segunda_etapa', questionario_id=questionario.id)
 
             questionario.diagnostico = 'Paciente sem sarcopenia'
             questionario.save()
-            return redirect('diagnostico', paciente_cpf=paciente.cpf)
+
+            resultado_texto = "Paciente Sem Sarcopenia!!"
+
+            messages.success(request, resultado_texto)
+
+            return redirect('diagnostico', questionario_id=questionario.id)
  
     else:
         form = QuestionarioSarcopeniaForm()
@@ -274,10 +286,10 @@ def primeira_etapa_avaliacao(request, paciente_cpf):
 
     return render(request, 'conta/primeira_etapa_avaliacao.html', context)
 
-def segunda_etapa_avaliacao(request, paciente_cpf):
+def segunda_etapa_avaliacao(request, questionario_id):
     """ Esta view é responsável por realizar a segunda etapa da avaliação do paciente """
-    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
-    questionario = Questionario.objects.filter(paciente=paciente).latest('data')
+    questionario = get_object_or_404(Questionario, id=questionario_id)
+    paciente = questionario.paciente
 
     if request.method == 'POST':
         form = QuestionarioSegundaEtapaForm(request.POST)
@@ -315,11 +327,22 @@ def segunda_etapa_avaliacao(request, paciente_cpf):
                     terceira = True
         
             if terceira:
-                return redirect('avaliar_terceira_etapa', paciente_cpf=paciente.cpf)
+
+
+                resultado_texto = "Paciente contém fraqueza\nDiagnóstico de provável Sarcopenia."
+
+                messages.warning(request, resultado_texto)
+
+
+                return redirect('avaliar_terceira_etapa', questionario_id=questionario.id)
 
             questionario.diagnostico = 'Paciente sem sarcopenia'
             questionario.save()
-            return redirect('diagnostico', paciente_cpf=paciente.cpf)
+
+            resultado_texto = "Não há Sarcopenia!!"
+
+            messages.success(request, resultado_texto)
+            return redirect('diagnostico', questionario_id=questionario.id)
  
     else:
         form = QuestionarioSegundaEtapaForm()
@@ -332,10 +355,10 @@ def segunda_etapa_avaliacao(request, paciente_cpf):
     return render(request, 'conta/segunda_etapa_avaliacao.html', context)
 
 @login_required
-def terceira_etapa_avaliacao(request, paciente_cpf):
+def terceira_etapa_avaliacao(request, questionario_id):
     """ Esta view é responsável por realizar a terceira etapa da avaliação do paciente """
-    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
-    questionario = Questionario.objects.filter(paciente=paciente).latest('data')
+    questionario = get_object_or_404(Questionario, id=questionario_id)
+    paciente = questionario.paciente
 
     if request.method == 'POST':
         form = QuestionarioTerceiraEtapaForm(request.POST)
@@ -393,11 +416,11 @@ def terceira_etapa_avaliacao(request, paciente_cpf):
 
             
             if quarta:
-                return redirect('avaliar_quarta_etapa', paciente_cpf=paciente.cpf)    
+                return redirect('avaliar_quarta_etapa', questionario_id=questionario.id)    
 
         questionario.diagnostico = 'Provável sarcopenia'
         questionario.save()
-        return redirect('diagnostico', paciente_cpf=paciente.cpf)
+        return redirect('diagnostico', questionario_id=questionario.id)
  
     else:
         form = QuestionarioTerceiraEtapaForm()
@@ -410,10 +433,10 @@ def terceira_etapa_avaliacao(request, paciente_cpf):
     return render(request, 'conta/terceira_etapa_avaliacao.html', context)
 
 @login_required
-def quarta_etapa_avaliacao(request, paciente_cpf):
+def quarta_etapa_avaliacao(request, questionario_id):
     """ Esta view é responsável por realizar a quarta etapa da avaliação do paciente """
-    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
-    questionario = Questionario.objects.filter(paciente=paciente).latest('data')
+    questionario = get_object_or_404(Questionario, id=questionario_id)
+    paciente = questionario.paciente
 
 
     if request.method == 'POST':
@@ -433,9 +456,9 @@ def quarta_etapa_avaliacao(request, paciente_cpf):
                 questionario.diagnostico = 'Sarcopenia'
 
             questionario.save()
-            return redirect('diagnostico', paciente_cpf=paciente.cpf)
+            return redirect('diagnostico', questionario_id=questionario.id)
 
-        return redirect('diagnostico', paciente_cpf=paciente.cpf) 
+        return redirect('diagnostico', questionario_id=questionario.id) 
 
     else: 
         form = QuestionarioQuartaEtapaForm()
@@ -449,10 +472,10 @@ def quarta_etapa_avaliacao(request, paciente_cpf):
     return render(request, 'conta/quarta_etapa_avaliacao.html', context)
 
 @login_required
-def diagnostico(request, paciente_cpf):
+def diagnostico(request, questionario_id):
     """ Esta view é responsável por exibir o diagnóstico final do paciente """
-    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
-    questionario = Questionario.objects.filter(paciente=paciente).latest('data')
+    questionario = get_object_or_404(Questionario, id=questionario_id)
+    paciente = questionario.paciente
     respostas = questionario.respostas
     diagnostico = questionario.diagnostico
     grave = False
@@ -472,9 +495,9 @@ def diagnostico(request, paciente_cpf):
     return render(request, 'conta/diagnostico.html', context)
 
 @login_required
-def questionario_list(request, paciente_cpf):
+def questionario_list(request, paciente_id):
     """ Esta view é responsável por listar todos os questionarios de um paciente específico """
-    paciente = get_object_or_404(Paciente, cpf=paciente_cpf)
+    paciente = get_object_or_404(Paciente, id=paciente_id)
     questionarios = Questionario.objects.filter(paciente=paciente).order_by('-data')
     context = {
         'questionarios': questionarios,

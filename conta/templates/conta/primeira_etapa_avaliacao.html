@@ -1,11 +1,26 @@
 {% extends 'base.html' %}
-
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+import Swal from 'sweetalert2'
+
+function dispara() {
+    return Swal.fire({
+  title: 'Error!',
+  text: 'Do you want to continue',
+  icon: 'error',
+  confirmButtonText: 'Cool'
+})}
+</script>
+
+
+
 <div class="container mt-4">
     <h3>Realizando Avaliação de Sarcopenia para: {{ paciente.nome }}</h3>
     <hr>
     
-    <form method="post">
+    <form method="post" onsubmit="return dispara()">
         {% csrf_token %}
 
         <div class="mb-3">
@@ -58,7 +73,7 @@
             {{ form.circunferencia_panturrilha }}
         </div>
         
-        <button type="submit" class="btn btn-primary">Salvar Avaliação</button>
+        <button type="submit" class="btn btn-primary" >Salvar Avaliação</button>
     </form>
 </div>
 {% endblock %}
