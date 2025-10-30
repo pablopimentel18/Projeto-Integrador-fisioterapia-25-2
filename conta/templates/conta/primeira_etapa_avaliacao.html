@@ -1,20 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-import Swal from 'sweetalert2'
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-function dispara() {
-    return Swal.fire({
-  title: 'Error!',
-  text: 'Do you want to continue',
-  icon: 'error',
-  confirmButtonText: 'Cool'
-})}
-</script>
-
-
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: '{{ message }}', 
+                    icon: 'warning' 
+                });
+        </script>
+        {% endfor %}
+    {% endif %}
 
 <div class="container mt-4">
     <h3>Realizando Avaliação de Sarcopenia para: {{ paciente.nome }}</h3>

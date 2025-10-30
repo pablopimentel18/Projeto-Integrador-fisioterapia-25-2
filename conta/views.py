@@ -260,11 +260,9 @@ def primeira_etapa_avaliacao(request, paciente_id):
 
             if(pontuacao>=11):
                 questionario.save()
-
                 resultado_texto = "Paciente Atingiu mais de 11 pontos.\nReferente à potencial diagnóstico de Sarcopenia!."
 
                 messages.success(request, resultado_texto)
-
                 return redirect('avaliar_segunda_etapa', questionario_id=questionario.id)
 
             questionario.diagnostico = 'Paciente sem sarcopenia'
@@ -283,7 +281,9 @@ def primeira_etapa_avaliacao(request, paciente_id):
         'form': form,
         'paciente': paciente,
     }
+    resultado_texto = "Paciente Atingiu mais de 11 pontos.\nReferente à potencial diagnóstico de Sarcopenia!."
 
+    messages.success(request, resultado_texto)
     return render(request, 'conta/primeira_etapa_avaliacao.html', context)
 
 def segunda_etapa_avaliacao(request, questionario_id):
@@ -345,13 +345,16 @@ def segunda_etapa_avaliacao(request, questionario_id):
             return redirect('diagnostico', questionario_id=questionario.id)
  
     else:
+
         form = QuestionarioSegundaEtapaForm()
     
     context = {
         'form': form,
         'paciente': paciente,
     }
+    resultado_texto = "Paciente Atingiu mais de 11 pontos.\nReferente à potencial diagnóstico de Sarcopenia!."
 
+    messages.success(request, resultado_texto)
     return render(request, 'conta/segunda_etapa_avaliacao.html', context)
 
 @login_required
@@ -416,10 +419,18 @@ def terceira_etapa_avaliacao(request, questionario_id):
 
             
             if quarta:
+
+                resultado_texto = "Paciente contém baixa massa muscular\nDiagnóstico de provável Sarcopenia."
+                messages.warning(request, resultado_texto)
                 return redirect('avaliar_quarta_etapa', questionario_id=questionario.id)    
 
         questionario.diagnostico = 'Provável sarcopenia'
         questionario.save()
+
+        resultado_texto = "Não há Sarcopenia!!"
+
+        messages.success(request, resultado_texto)
+
         return redirect('diagnostico', questionario_id=questionario.id)
  
     else:

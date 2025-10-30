@@ -1,6 +1,23 @@
 {% extends 'menu.html' %}
 
 {% block content %}
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: '{{ message }}', 
+                    icon: 'warning' 
+                });
+        </script>
+        {% endfor %}
+    {% endif %}
+
+
 <div class="container mt-4">
     <h3>Realizando Avaliação de Sarcopenia para: {{ paciente.nome }}</h3>
     <hr>
