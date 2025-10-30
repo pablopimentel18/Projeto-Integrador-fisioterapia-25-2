@@ -248,15 +248,15 @@ def primeira_etapa_avaliacao(request, paciente_id):
                 
                 else:
                     if(paciente.sexo == 'F'):
-                        if(int(resposta) < 33):
-                            pontuacao += 0
+                        if(int(resposta) <= 33):
+                            pontuacao += 10
                         else:
-                            pontuacao +=10
+                            pontuacao +=0
                     else:
-                        if(int(resposta) < 34):
-                            pontuacao += 0
+                        if(int(resposta) <= 34):
+                            pontuacao += 10
                         else:
-                            pontuacao +=10
+                            pontuacao +=0
 
             if(pontuacao>=11):
                 questionario.save()
@@ -326,7 +326,7 @@ def segunda_etapa_avaliacao(request, questionario_id):
             if terceira:
 
 
-                resultado_texto = "Paciente contém fraqueza\nDiagnóstico de provável Sarcopenia."
+                resultado_texto = "Paciente contém fraqueza, diagnóstico de provável Sarcopenia."
 
                 messages.warning(request, resultado_texto)
 
@@ -417,7 +417,7 @@ def terceira_etapa_avaliacao(request, questionario_id):
             
             if quarta:
 
-                resultado_texto = "Paciente contém baixa massa muscular\nDiagnóstico de provável Sarcopenia."
+                resultado_texto = "Paciente contém baixa massa muscular, diagnóstico de provável Sarcopenia."
                 messages.warning(request, resultado_texto)
                 return redirect('avaliar_quarta_etapa', questionario_id=questionario.id)    
 
@@ -459,7 +459,7 @@ def quarta_etapa_avaliacao(request, questionario_id):
             if((4/tempo) <= 0.8):
                 grave=True
                 questionario.diagnostico = 'Sarcopenia grave.'
-                resultado_texto = "Sarcopenia grave"
+                resultado_texto = "Diagnóstico de sarcopenia grave"
             else:
                 grave=False
                 questionario.diagnostico = 'Sarcopenia confirmada.'
