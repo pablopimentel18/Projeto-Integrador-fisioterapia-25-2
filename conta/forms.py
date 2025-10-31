@@ -123,7 +123,7 @@ class QuestionarioTerceiraEtapaForm(forms.Form):
     )
 
     valor_terceira_etapa = forms.IntegerField(
-        label="Insira o valor obtido na avaliação selecionada:",
+        label="Insira o valor obtido na avaliação (somente MMEA):",
         required=False
     )
 

@@ -295,7 +295,7 @@ def segunda_etapa_avaliacao(request, questionario_id):
             dados_avalicao = form.cleaned_data
             questionario.respostas.update(dados_avalicao)
             questionario.save()
-            escolha = dados_avalicao.get('segunda_etapa_avaliacao')
+            escolha = dados_avalicao.get('segunda_etapa')
             valor = dados_avalicao.get('valor_segunda_etapa')
             terceira = False
 
@@ -333,13 +333,15 @@ def segunda_etapa_avaliacao(request, questionario_id):
 
                 return redirect('avaliar_terceira_etapa', questionario_id=questionario.id)
 
-            questionario.diagnostico = 'Paciente sem sarcopenia.'
-            questionario.save()
+            else:
 
-            resultado_texto = "Paciente sem sarcopenia"
+                questionario.diagnostico = 'Paciente sem sarcopenia.'
+                questionario.save()
 
-            messages.success(request, resultado_texto)
-            return redirect('diagnostico', questionario_id=questionario.id)
+                resultado_texto = "Paciente sem sarcopenia"
+
+                messages.success(request, resultado_texto)
+                return redirect('diagnostico', questionario_id=questionario.id)
  
     else:
 
