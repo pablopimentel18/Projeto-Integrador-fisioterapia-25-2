@@ -214,17 +214,31 @@ def paciente_delete(request, paciente_id):
 @login_required
 def tipo_avaliacao(request, paciente_id): 
     """ Esta view é responsável por escolher o tipo de avaliação do paciente """
+    """ Ela também instância um novo questionário para o paciente """
     paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    qtd_questionarios = Questionario.objects.count()
+    questionario = Questionario()
+    questionario.id = (qtd_questionarios+1)
+    questionario.paciente = paciente
+    questionario.avaliador = paciente.avaliador
+    questionario.data = timezone.now().date()
+    questionario.save()
+
     context = {
         'paciente': paciente,
+        'questionario': questionario,
     }
     return render(request, 'conta/tipo_avaliacao.html', context)
 
 
 @login_required
-def primeira_etapa_avaliacao(request, paciente_id):
+def primeira_etapa_avaliacao(request, questionario_id):
     """ Esta view é responsável por realizar a avaliação do paciente """
-    paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    questionario = get_object_or_404(Questionario, id=questionario_id)
+    paciente = questionario.paciente
+
     pontuacao = 0
     if request.method == 'POST':
         form = QuestionarioSarcopeniaForm(request.POST)
@@ -232,13 +246,7 @@ def primeira_etapa_avaliacao(request, paciente_id):
         if form.is_valid():
             dados_avaliacao = form.cleaned_data
 
-            qtd_questionarios = Questionario.objects.count()
-            questionario = Questionario()
-            questionario.id = (qtd_questionarios+1)
-            questionario.paciente = paciente
-            questionario.avaliador = paciente.avaliador
-            questionario.data = timezone.now().date()
-            questionario.respostas = dados_avaliacao
+            questionario.respostas.update(dados_avaliacao)
             questionario.save()
             dados_avaliacao.values()
             for resposta in dados_avaliacao.values():
@@ -292,11 +300,11 @@ def segunda_etapa_avaliacao(request, questionario_id):
         form = QuestionarioSegundaEtapaForm(request.POST)
 
         if form.is_valid():
-            dados_avalicao = form.cleaned_data
-            questionario.respostas.update(dados_avalicao)
+            dados_avaliacao = form.cleaned_data
+            questionario.respostas.update(dados_avaliacao)
             questionario.save()
-            escolha = dados_avalicao.get('segunda_etapa')
-            valor = dados_avalicao.get('valor_segunda_etapa')
+            escolha = dados_avaliacao.get('segunda_etapa')
+            valor = dados_avaliacao.get('valor_segunda_etapa')
             terceira = False
 
             if escolha == 'Forca Preensar':
@@ -366,12 +374,12 @@ def terceira_etapa_avaliacao(request, questionario_id):
         form = QuestionarioTerceiraEtapaForm(request.POST)
 
         if form.is_valid():
-            dados_avalicao = form.cleaned_data
-            questionario.respostas.update(dados_avalicao)
+            dados_avaliacao = form.cleaned_data
+            questionario.respostas.update(dados_avaliacao)
             questionario.save()
 
-            escolha = dados_avalicao.get('terceira_etapa')
-            valor = dados_avalicao.get('valor_terceira_etapa')
+            escolha = dados_avaliacao.get('terceira_etapa')
+            valor = dados_avaliacao.get('valor_terceira_etapa')
             quarta = False 
 
             if escolha == 'MMEA':
@@ -453,11 +461,11 @@ def quarta_etapa_avaliacao(request, questionario_id):
         form = QuestionarioQuartaEtapaForm(request.POST)
     
         if form.is_valid():
-            dados_avalicao = form.cleaned_data
-            questionario.respostas.update(dados_avalicao)
+            dados_avaliacao = form.cleaned_data
+            questionario.respostas.update(dados_avaliacao)
             questionario.save()
 
-            tempo = dados_avalicao.get('valor_quarta_etapa')
+            tempo = dados_avaliacao.get('valor_quarta_etapa')
             if((4/tempo) <= 0.8):
                 grave=True
                 questionario.diagnostico = 'Sarcopenia grave.'

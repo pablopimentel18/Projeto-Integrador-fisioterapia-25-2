@@ -7,8 +7,8 @@
             <!-- <a href="{% url 'usuario_list' paciente.avaliador.id %}" class="btn btn-principal">Voltar para Lista de Usuários</a> --> 
         </div>
         <div class="d-flex flex-column gap-3">
-            <a href="{% url 'avaliar_primeira_etapa' paciente.id %}" class="btn btn-primary btn-lg">Primeira Etapa de Avaliação</a>
-            <!-- Adicione mais botões para outros tipos de avaliação conforme necessário -->
+            <a href="{% url 'avaliar_primeira_etapa' questionario.id %}" class="btn btn-primary btn-lg">Avaliação para pacientes de peso ideal</a>
+            <a href="{% url 'avaliar_primeira_etapa' questionario.id %}" class="btn btn-primary btn-lg">Avaliação para pacientes obesos</a>
         </div>
     </div>
 </div>
