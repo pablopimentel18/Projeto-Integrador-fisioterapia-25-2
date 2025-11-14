@@ -3,6 +3,7 @@ from django import forms
 from conta.models.usuario import Usuario
 from django.contrib.auth.models import User
 from conta.models.paciente import Paciente
+import re 
 
 class UserForm(ModelForm):
     """ formulario para criar um usuário """
@@ -13,17 +14,78 @@ class UserForm(ModelForm):
 
 class UsuarioForm(ModelForm):
     """ formulario para criar um usuario """
+    data_nascimento = forms.DateField(
+        label="Data de Nascimento",
+        widget=forms.TextInput(
+            attrs={'placeholder': 'DD/MM/AAAA'}
+        ),
+        initial=None,
+        input_formats=['%d/%m/%Y'], 
+        required=True
+    )
+
+    # corrige o erro de 'maxlength' do telefone
+    numero_telefone = forms.CharField(
+        label="Número de telefone",
+        max_length=18,  
+        required=True 
+    )
+
     class Meta:
         """ classe meta """
         model = Usuario
         fields = ['nome', 'email', 'numero_telefone', 'data_nascimento']
 
+    def clean_numero_telefone(self):
+        """ Limpa o campo 'numero_telefone', removendo a máscara. """
+        telefone = self.cleaned_data.get('numero_telefone')
+        if telefone:
+            telefone = re.sub(r'\D', '', telefone)
+        return telefone
+
 
 class PacienteForm(ModelForm):
+
+    cpf = forms.CharField(
+        label="CPF",
+        max_length=18, # Permite '000.000.000-00'
+        required=True
+    )
+    numero_telefone = forms.CharField(
+        label="Número de telefone",
+        max_length=18, # Permite que '(00) 00000-0000' passe
+        required=True
+    )
+
+    estatura = forms.IntegerField(
+        label="Estatura",
+        initial=None, 
+        required=True 
+    )
+    
+    peso = forms.IntegerField(
+        label="Peso",
+        initial=None,
+        required=True 
+    )
+    
     class Meta:
         model = Paciente
-
         fields = ['nome', 'email', 'cpf', 'numero_telefone', 'idade', 'sexo', 'raca', 'estatura', 'peso']
+
+    def clean_cpf(self):
+        """ Limpa o campo 'cpf', removendo a máscara. """
+        cpf = self.cleaned_data.get('cpf')
+        if cpf:
+            cpf = re.sub(r'\D', '', cpf)
+        return cpf
+
+    def clean_numero_telefone(self):
+        """ Limpa o campo 'numero_telefone', removendo a máscara. """
+        telefone = self.cleaned_data.get('numero_telefone')
+        if telefone:
+            telefone = re.sub(r'\D', '', telefone)
+        return telefone
 
 class QuestionarioSarcopeniaForm(forms.Form):
 

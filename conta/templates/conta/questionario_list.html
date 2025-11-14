@@ -1,27 +1,81 @@
 {% extends 'menu.html' %}
+{% load static %}
+{% load custom_filters %}  {% block content %}
 
-{% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Questionários</title>
-</head>
-<body>
-    <h1>Lista de Questionários</h1>
-    <ul>
-        {% for questionario in questionarios %}
-            <li>{{ questionario.paciente.nome }}</li>
+<style>
+    .card-custom {
+        padding: 0 !important;
+    }
 
-            <li>{{ questionario.respostas}}</li>
+    .card-custom .card-body {
+        padding: 2.5rem;
+    }
 
-            <li>{{questionario.diagnostico}}</li>
-            <br>
-        {% empty %}
-            <li>Nenhum questionário disponível.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+    .card-custom .card-title {
+        color: var(--cor-principal);
+        font-weight: bold;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 1.5rem;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% if messages %}
+    {% for message in messages %}
+        <script>
+            Swal.fire({
+                title: 'Atenção!',
+                text: '{{ message|escapejs }}',
+                icon: 'warning'
+            });
+        </script>
+    {% endfor %}
+{% endif %}
+
+
+<div class="container mt-4">
+
+    <h3 class="text-center mb-4">Histórico de Avaliações</h3>
+    <hr class="mb-5">
+
+    {% for questionario in questionarios %}
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                
+                <h5 class="card-title">{{ questionario.paciente.nome }}</h5>
+                <p class="text-muted" style="margin-top: -1.2rem; margin-bottom: 1.5rem;">
+                    Avaliação realizada em: {{ questionario.data|date:"d/m/Y" }}
+                </p>
+
+                <p class="mb-1" style="font-weight: 500;">Diagnóstico Final:</p>
+                <h4 class="text-principal" style="font-weight: 500;">{{ questionario.diagnostico }}</h4>
+                
+                <hr class="my-4">
+
+                <p class="mb-2" style="font-weight: 500;">Respostas Detalhadas:</p>
+                <ul class="list-group list-group-flush">
+                    
+                    {% for chave, valor in questionario.respostas.items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            
+                            <span>{{ chave|desunder|capfirst }}</span>
+                            
+                            <span class="badge bg-secondary rounded-pill">{{ valor }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+                
+            </div>
+        </div>
+
+    {% empty %}
+        <div class="card card-custom">
+            <div class="card-body">
+                <p class="text-center text-muted mb-0">Nenhum questionário disponível no histórico.</p>
+            </div>
+        </div>
+    {% endfor %}
+    
+</div>
 {% endblock %}

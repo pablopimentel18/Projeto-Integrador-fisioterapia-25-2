@@ -1,33 +1,115 @@
 {% extends 'menu.html' %}
-
+{% load static %}
 {% block content %}
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    .card-custom {
+        padding: 0 !important;
+    }
+    .card-custom .card-body {
+        padding: 2.5rem;
+    }
+    .card-custom .card-title {
+        color: var(--cor-principal);
+        font-weight: bold;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 1.5rem;
+    }
+    .card-recomendacoes {
+        text-align: left;
+    }
+    .list-group-item::before {
+        content: '✓'; 
+        color: var(--cor-principal);
+        font-weight: bold;
+        margin-right: 10px;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    {% if messages %}
-        {% for message in messages %}
-            <script>
-                Swal.fire({
-                    title: 'Atenção!',
-                    text: '{{ message }}', 
-                    icon: 'warning' 
-                });
+{% if messages %}
+    {% for message in messages %}
+        <script>
+            Swal.fire({
+                title: 'Atenção!',
+                text: '{{ message|escapejs }}',  icon: 'warning'
+            });
         </script>
-        {% endfor %}
-    {% endif %}
-
-
+    {% endfor %}
+{% endif %}
 
 
 <div class="container mt-4">
-    <h3>Diagnóstico de Sarcopenia para: {{ paciente.nome }}</h3>
-    <hr>
-    <div class="mb-3">
-        <p><strong>Resultado da Avaliação:</strong></p>
-        <p>{{ diagnostico }}</p>
+
+    <h3 class="text-center mb-4">Diagnóstico de Sarcopenia para: <span class="text-principal">{{ paciente.nome }}</span></h3>
+    <hr class="mb-5">
+
+    <div class="card card-custom mb-4">
+        <div class="card-body text-center"> 
+            <h5 class="card-title">Resultado da Avaliação</h5>
+            
+            <h4 class="mt-3" style="font-weight: 500;">
+                {{ diagnostico }}
+            </h4>
+            
+        </div>
+    </div>
+    
+    <div class="card card-custom mb-5">
+        <div class="card-body card-recomendacoes">
+            
+            {% if diagnostico == "Paciente sem sarcopenia." %}
+                <h5 class="card-title">Recomendação (Não há Sarcopenia)</h5>
+                <p>O paciente não apresenta indicadores de sarcopenia no momento. Este é um excelente resultado e demonstra uma boa manutenção da saúde muscular.</p>
+                <h5 class="mt-4">Próximos Passos</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item border-0 px-0"><strong>Manutenção:</strong> Incentive a manutenção de um estilo de vida ativo, com ênfase em exercícios de resistência (musculação, pilates, funcional).</li>
+                    <li class="list-group-item border-0 px-0"><strong>Nutrição:</strong> Recomende a continuidade de uma dieta balanceada e rica em proteínas (ovos, carnes magras, laticínios).</li>
+                    <li class="list-group-item border-0 px-0"><strong>Monitoramento:</strong> Aconselha-se o monitoramento regular (ex: reavaliação anual) para fins de prevenção.</li>
+                </ul>
+
+            {% elif diagnostico == "Provável sarcopenia" %}
+                <h5 class="card-title">Recomendação (Provável Sarcopenia)</h5>
+                <p>O paciente apresenta baixa força muscular, indicando uma <strong>suspeita clínica de sarcopenia</strong>. A próxima etapa é crucial para a confirmação.</p>
+                <h5 class="mt-4">Próximos Passos</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item border-0 px-0"><strong>Confirmar Diagnóstico:</strong> A suspeita deve ser confirmada através da avaliação da quantidade de massa muscular.</li>
+                    <li class="list-group-item border-0 px-0"><strong>Encaminhamento:</strong> Recomenda-se o encaminhamento para exames (DXA ou BIA) para quantificar a massa muscular apendicular (MMEA).</li>
+                    <li class="list-group-item border-0 px-0"><strong>Ação Precoce:</strong> Iniciar um programa leve de exercícios de resistência e reforçar a ingestão de proteínas.</li>
+                </ul>
+
+            {% elif diagnostico == "Sarcopenia confirmada." %}
+                <h5 class="card-title">Recomendação (Sarcopenia Confirmada)</h5>
+                <p>O diagnóstico de sarcopenia é confirmado. O paciente apresenta <strong>baixa força muscular E baixa massa muscular</strong>. A intervenção precoce é a chave para reverter o quadro.</p>
+                <h5 class="mt-4">Próximos Passos</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item border-0 px-0"><strong>Intervenção Fisioterapêutica:</strong> Iniciar imediatamente um programa de exercícios de resistência supervisionado (2-3x por semana).</li>
+                    <li class="list-group-item border-0 px-0"><strong>Intervenção Nutricional:</strong> Combinar o exercício com um plano nutricional focado em alta ingestão de proteínas (1.2 a 1.5 g/kg/dia).</li>
+                    <li class="list-group-item border-0 px-0"><strong>Suplementação:</strong> Avaliar a necessidade de suplementação de Vitamina D e, potencialmente, Leucina ou HMB.</li>
+                </ul>
+            
+            {% elif diagnostico == "Sarcopenia grave." %}
+                <h5 class="card-title">Recomendação (Sarcopenia Grave)</h5>
+                <p>O diagnóstico é de sarcopenia grave. O paciente apresenta os três componentes: <strong>baixa força, baixa massa muscular E baixo desempenho físico</strong>. O risco de quedas e fragilidade é elevado.</p>
+                <h5 class="mt-4">Próximos Passos</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item border-0 px-0"><strong>Intervenção Multidisciplinar Urgente:</strong> O paciente requer uma abordagem intensiva (fisioterapeuta, nutricionista e médico).</li>
+                    <li class="list-group-item border-0 px-0"><strong>Fisioterapia Imediata:</strong> Foco não apenas em força, mas também em potência, equilíbrio e treino funcional para reduzir o risco de quedas.</li>
+                    <li class="list-group-item border-0 px-0"><strong>Suporte Nutricional Otimizado:</strong> A intervenção nutricional (alta ingestão proteica) é crítica e deve ser monitorada de perto.</li>
+                </ul>
+            
+            {% else %}
+                <p class="text-muted">Não há recomendações específicas cadastradas para este resultado.</p>
+            {% endif %}
+
+        </div>
     </div>
 
-
     
+    <div class="text-center mb-5">
+        <a href="{% url 'index' %}" class="btn btn-principal btn-lg">Voltar ao Início</a>
+    </div>
+
 </div>
 {% endblock %}

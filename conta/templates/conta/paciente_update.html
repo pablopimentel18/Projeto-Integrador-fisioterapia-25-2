@@ -1,17 +1,71 @@
 {% extends 'menu.html' %}
+{% load static %}
 {% block content %}
+
+<style>
+    .card-custom {
+        padding: 0 !important; 
+    }
+    .card-custom .card-body {
+        padding: 2.5rem;
+    }
+    
+    .form-render-p p {
+        margin-bottom: 1.5rem;
+    }
+    .form-render-p label {
+        font-weight: 500;
+        display: block;
+        margin-bottom: .5rem;
+    }
+</style>
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card-custom">
-                <h1 class="text-center mb-4">Update Paciente</h1> <form method="post">
-                    {% csrf_token %}
-                    {{ paciente_form.as_p }} <div class="d-grid">
-                        <input type="submit" value="Salvar Alterações" class="btn btn-principal btn-lg mt-3">
-                    </div>
-                </form>
+            <div class="card card-custom">
+                <div class="card-body">
+                    
+                    <h3 class="text-center mb-4 text-principal" style="font-weight: bold;">Atualizar Paciente</h3>
+                    <hr class="mb-5">
+
+                    <form method="post" class="form-render-p">
+                        {% csrf_token %}
+                        
+                        {{ paciente_form.as_p }}
+                        
+                        <div class="d-grid">
+                            <input type="submit" value="Salvar Alterações" class="btn btn-principal btn-lg mt-3">
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.form-render-p');
+        
+        if (form) {
+            const inputs = form.querySelectorAll(
+                'input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="number"], input[type="tel"]'
+            );
+            inputs.forEach(input => {
+                input.classList.add('form-control');
+            });
+
+            const selects = form.querySelectorAll('select');
+            selects.forEach(select => {
+                select.classList.add('form-select');
+            });
+
+            const textareas = form.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.classList.add('form-control');
+            });
+        }
+    });
+</script>
+
 {% endblock %}

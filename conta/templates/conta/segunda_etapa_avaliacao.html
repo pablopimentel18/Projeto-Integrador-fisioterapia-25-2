@@ -1,46 +1,132 @@
 {% extends 'menu.html' %}
-
+{% load static %} 
 {% block content %}
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    .card-custom {
+        padding: 0 !important;
+    }
+    .card-custom .card-body {
+        padding: 2.5rem;
+    }
+    .card-custom .card-title {
+        color: var(--cor-principal);
+        font-weight: bold;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 1.5rem;
+    }
 
-    {% if messages %}
-        {% for message in messages %}
-            <script>
-                Swal.fire({
-                    title: 'Atenção!',
-                    text: '{{ message|escapejs }}', 
-                    icon: 'warning' 
-                });
+    .card-custom .form-check-label {
+        font-size: 1.3rem;
+        padding-top: 4px;
+    }
+
+    .card-custom .form-check-input[type="radio"] {
+        transform: scale(1.8);
+        margin-right: 12px;
+    }
+    
+    .card-custom .form-text-muted {
+        font-size: 1.05rem;
+        display: inline-block; 
+        margin-top: 8px; 
+    }
+</style>
+
+{% if messages %}
+    {% for message in messages %}
+        <script>
+            Swal.fire({
+                title: 'Atenção!',
+                text: '{{ message|escapejs }}', 
+                icon: 'warning' 
+            });
         </script>
-        {% endfor %}
-    {% endif %}
+    {% endfor %}
+{% endif %}
 
 
 <div class="container mt-4">
+    <div class="text-center mb-4">
+        <img src="{% static 'imgs/2.JPG' %}" class="img-fluid rounded shadow" style="max-width: 800px;" alt="Fluxograma de Avaliação de Sarcopenia">
+    </div>
+    <h3 class="text-center mb-4">Realizando 2ª Etapa da Avaliação para: <span class="text-principal">{{ paciente.nome }}</span></h3>
+    <hr class="mb-5">
 
-    <h3>Realizando Avaliação de Sarcopenia para: {{ paciente.nome }}</h3>
-    <hr>
     <form method="post">
         {% csrf_token %}
 
-        <div class="mb-3">
-            <p><strong>{{ form.segunda_etapa.label }}</strong></p>
-            {% for radio in form.segunda_etapa %}
-                <div class="form-check">
-                    <label class="form-check-label">{{ radio.tag }} {{ radio.choice_label }}</label>
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ form.segunda_etapa.label }}</h5>
+                <div class="form-group mt-3">
+                    
+                    {% for radio in form.segunda_etapa %}
+                        <div class="form-check form-check-inline mb-2">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        </div>
-       
-        <div class="mb-3">
-            <label class="form-label">{{ form.valor_segunda_etapa.label }}</label>
-            {{ form.valor_segunda_etapa }}
+            </div>
         </div>
         
-        <button type="submit" class="btn btn-primary">Salvar Avaliação</button>
+        <div class="card card-custom mb-5" id="box_valor">
+            <div class="card-body">
+                
+                <h5 class="card-title" id="label_valor">...</h5>
+                
+                <div class="form-group mt-3">
+                    {{ form.valor_segunda_etapa }}
+                    
+                    <small class="form-text text-muted" id="helper_valor">...</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mb-5">
+            <button type="submit" class="btn btn-principal btn-lg">Salvar Avaliação</button>
+        </div>
     </form>
-     
-    
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const radioLevantar = document.querySelector("#id_segunda_etapa_0");
+        const radioPreensao = document.querySelector("#id_segunda_etapa_1");
+
+        const boxValor = document.querySelector("#box_valor");
+
+        const labelValor = document.querySelector("#label_valor");
+        const helperValor = document.querySelector("#helper_valor");
+
+
+        boxValor.style.display = "none";
+
+        function atualizarBox(tipo) {
+            if (tipo === 'levantar') {
+                labelValor.innerHTML = "Insira o tempo (em segundos) para 5 repetições:";
+                helperValor.innerHTML = "Paciente deve levantar e sentar 5x o mais rápido que puder.";
+                boxValor.style.display = "block";
+            } else if (tipo === 'preensao') {
+                labelValor.innerHTML = "Insira a força de preensão (em kgf):";
+                helperValor.innerHTML = "Use a média de 3 tentativas com o dinamômetro.";
+                boxValor.style.display = "block";
+            }
+        }
+
+        radioLevantar.addEventListener('change', function() {
+            atualizarBox('levantar');
+        });
+        
+        radioPreensao.addEventListener('change', function() {
+            atualizarBox('preensao');
+        });
+
+    });
+</script>
+
 {% endblock %}

@@ -1,31 +1,40 @@
 {% extends 'menu.html' %}
-{% block content %}
+{% load static %}
+{% load custom_filters %} {% block content %}
+
+<style>
+    .card-custom {
+        padding: 0 !important;
+    }
+    .card-custom .card-body {
+        padding: 2.5rem;
+    }
+</style>
 <div class="container mt-5">
-    <div class="card-custom">
-        <h1 class="mb-4">Meu Perfil</h1>
-        <table class="table table-bordered">
-            <tbody>
-                <tr>
-                    <th style="width: 30%;">Nome</th>
-                    <td>{{ usuario.nome }}</td>
-                </tr>
-                <tr>
-                    <th>Email</th>
-                    <td>{{ usuario.email }}</td>
-                </tr>
-                <tr>
-                    <th>Número de Telefone</th>
-                    <td>{{ usuario.numero_telefone }}</td>
-                </tr>
-                <tr>
-                    <th>Data de Nascimento</th>
-                    <td>{{ usuario.data_nascimento }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="mt-4 text-end">
-            <a href="{% url 'usuario_update' user.id %}" class="btn btn-secundario" role="button">Editar Perfil</a>
-            <a href="{% url 'usuario_delete' usuario.id %}" class="btn btn-danger" role="button" onclick="user_deletado()">Deletar Conta</a>
+    <div class="card card-custom">
+        <div class="card-body">
+            
+            <h3 class="text-center mb-4 text-principal" style="font-weight: bold;">Meu Perfil</h3>
+            <hr class="mb-5">
+
+            <dl class="row">
+                <dt class="col-sm-3">Nome</dt>
+                <dd class="col-sm-9">{{ usuario.nome }}</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">{{ usuario.email }}</dd>
+
+                <dt class="col-sm-3">Telefone</dt>
+                <dd class="col-sm-9">{{ usuario.numero_telefone|mask_phone }}</dd>
+
+                <dt class="col-sm-3">Data de Nascimento</dt>
+                <dd class="col-sm-9">{{ usuario.data_nascimento|date:"d/m/Y" }}</dd>
+            </dl>
+
+            <div class="mt-4 text-end">
+                <a href="{% url 'usuario_update' user.id %}" class="btn btn-outline-principal" role="button">Editar Perfil</a>
+                <a href="{% url 'usuario_delete' usuario.id %}" class="btn btn-danger" role="button" onclick="user_deletado()">Deletar Conta</a>
+            </div>
         </div>
     </div>
 </div>

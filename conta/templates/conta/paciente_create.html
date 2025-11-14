@@ -1,20 +1,112 @@
 {% extends 'menu.html' %}
+{% load static %}
 {% block content %}
+
+<style>
+    .card-custom {
+        padding: 0 !important; 
+    }
+    .card-custom .card-body {
+        padding: 2.5rem;
+    }
+    .form-render-p p {
+        margin-bottom: 1.5rem;
+    }
+    .form-render-p label {
+        font-weight: 500;
+        display: block;
+        margin-bottom: .5rem;
+    }
+</style>
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card-custom">
-                <h1 class="text-center mb-4">Criar Paciente</h1> <form method="post">
+            <div class="card card-custom">
+                <div class="card-body">
                     
-                    {% csrf_token %}
-                    {{ form_paciente.as_p }} 
-                    
-                    <div class="d-grid">
-                        <input type="submit" value="Salvar Alterações" class="btn btn-principal btn-lg mt-3">
-                    </div>
-                </form>
+                    <h3 class="text-center mb-4 text-principal" style="font-weight: bold;">Criar Paciente</h3>
+                    <hr class="mb-5">
+
+                    <form method="post" class="form-render-p">
+                        {% csrf_token %}
+                        
+                        {{ form_paciente.as_p }}
+                        
+                        <div class="d-grid">
+                            <input type="submit" value="Criar Paciente" class="btn btn-principal btn-lg mt-3">
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://unpkg.com/imask"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const form = document.querySelector('.form-render-p');
+        if (form) {
+            const inputs = form.querySelectorAll(
+                'input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="number"], input[type="tel"]'
+            );
+            inputs.forEach(input => {
+                input.classList.add('form-control');
+            });
+
+            const selects = form.querySelectorAll('select');
+            selects.forEach(select => {
+                select.classList.add('form-select');
+            });
+
+            const textareas = form.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.classList.add('form-control');
+            });
+        }
+
+        try {
+            const labelEstatura = document.querySelector("label[for='id_estatura']");
+            if (labelEstatura) {
+                labelEstatura.innerHTML = "Estatura (cm):";
+            }
+
+            const labelPeso = document.querySelector("label[for='id_peso']");
+            if (labelPeso) {
+                labelPeso.innerHTML = "Peso (kg):";
+            }
+        } catch (e) {
+            console.warn("Não foi possível encontrar os labels de peso/estatura:", e);
+        }
+
+        try {
+            const cpfInput = document.querySelector("#id_cpf");
+            if (cpfInput) {
+                cpfInput.removeAttribute('maxlength'); 
+                
+                IMask(cpfInput, {
+                    mask: '000.000.000-00'
+                });
+            }
+
+            const phoneInput = document.querySelector("#id_numero_telefone");
+            if (phoneInput) {
+                phoneInput.removeAttribute('maxlength'); 
+                
+                IMask(phoneInput, {
+                    mask: [
+                        { mask: '(00) 0000-0000' },
+                        { mask: '(00) 00000-0000' }
+                    ]
+                });
+            }
+        } catch (e) {
+            console.warn("Não foi possível aplicar as máscaras de input:", e);
+        }
+
+    });
+</script>
+
 {% endblock %}
