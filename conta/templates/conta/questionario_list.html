@@ -1,81 +1,426 @@
 {% extends 'menu.html' %}
 {% load static %}
-{% load custom_filters %}  {% block content %}
+{% block content %}
 
 <style>
-    .card-custom {
-        padding: 0 !important;
+    :root {
+        --cor-principal: #5c5f96;
+        --cor-principal-hover: #4a4d7c;
+        --cor-fundo: #f8f9fa;
+        --cor-texto: #212529;
     }
-
-    .card-custom .card-body {
-        padding: 2.5rem;
-    }
-
-    .card-custom .card-title {
+    
+    .list-header {
         color: var(--cor-principal);
         font-weight: bold;
-        border-bottom: none;
-        padding-bottom: 0;
-        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        font-size: 0.85em;
+        letter-spacing: 0.5px;
+        padding: 0 1.25rem; 
+        margin-bottom: 8px;
     }
+
+    .accordion-button {
+        background: white !important;
+        border: none;
+        color: var(--cor-principal) !important;
+        font-weight: 500;
+        box-shadow: none;
+        cursor: pointer; 
+    }
+    .accordion-button:not(.collapsed) {
+        color: var(--cor-principal) !important;
+        background-color: #f0f1fa !important;
+    }
+    .diagnostico-label { font-size: 1.1em; color: var(--cor-principal); font-weight: bold; }
+    .export-btn-container { display: flex; justify-content: flex-end; align-items: center; }
+    .table thead th { background: #f0f1fa; color: var(--cor-principal); font-weight: 500; }
+    .badge-normal { background-color: #198754; }
+    .badge-alerta { background-color: #ffc107; color: #212529; }
+    .badge-grave { background-color: #dc3545; }
+    .etapa-descricao { font-size: 0.95em; color: #888; }
+    .accordion-body { background: #fcfcff; }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-{% if messages %}
-    {% for message in messages %}
-        <script>
-            Swal.fire({
-                title: 'Atenção!',
-                text: '{{ message|escapejs }}',
-                icon: 'warning'
-            });
-        </script>
-    {% endfor %}
-{% endif %}
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <div class="container mt-4">
-
     <h3 class="text-center mb-4">Histórico de Avaliações</h3>
     <hr class="mb-5">
+    
+    <div class="row w-100 list-header d-none d-md-flex">
+        <div class="col-4">PACIENTE</div>
+        <div class="col-3">DATA DA AVALIAÇÃO</div>
+        <div class="col-3">DIAGNÓSTICO</div>
+        <div class="col-2"></div> </div>
 
-    {% for questionario in questionarios %}
-        <div class="card card-custom mb-4">
-            <div class="card-body">
-                
-                <h5 class="card-title">{{ questionario.paciente.nome }}</h5>
-                <p class="text-muted" style="margin-top: -1.2rem; margin-bottom: 1.5rem;">
-                    Avaliação realizada em: {{ questionario.data|date:"d/m/Y" }}
-                </p>
-
-                <p class="mb-1" style="font-weight: 500;">Diagnóstico Final:</p>
-                <h4 class="text-principal" style="font-weight: 500;">{{ questionario.diagnostico }}</h4>
-                
-                <hr class="my-4">
-
-                <p class="mb-2" style="font-weight: 500;">Respostas Detalhadas:</p>
-                <ul class="list-group list-group-flush">
-                    
-                    {% for chave, valor in questionario.respostas.items %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            
-                            <span>{{ chave|desunder|capfirst }}</span>
-                            
-                            <span class="badge bg-secondary rounded-pill">{{ valor }}</span>
-                        </li>
-                    {% endfor %}
-                </ul>
-                
+    <div class="accordion" id="avaliacoesAccordion">
+        {% for questionario in questionarios %}
+        <div class="accordion-item mb-3 border-0">
+            <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                <div class="accordion-button collapsed shadow-sm w-100" 
+                     role="button"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#collapse{{ forloop.counter }}"
+                     aria-expanded="false"
+                     aria-controls="collapse{{ forloop.counter }}">
+                    <div class="row w-100 align-items-center">
+                        <div class="col-4">
+                            <span style="color: var(--cor-principal); font-weight: bold;">
+                                {{ questionario.paciente.nome }}
+                            </span>
+                        </div>
+                        <div class="col-3">
+                            <span class="text-muted">{{ questionario.data|date:"d/m/Y" }}</span>
+                        </div>
+                        <div class="col-3 diagnostico-label">
+                            {{ questionario.diagnostico }}
+                        </div>
+                        
+                        <div class="col-2 export-btn-container">
+                            <a href="{% url 'exportar_diagnostico_pdf' questionario.id %}"
+                               onclick="iniciarDownload(event, this)"
+                               class="btn btn-outline-primary btn-sm">
+                                <span class="texto-original">Exportar PDF</span>
+                                <span class="texto-loading d-none">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Gerando...
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </h2>
+            <div id="collapse{{ forloop.counter }}"
+                 class="accordion-collapse collapse"
+                 aria-labelledby="heading{{ forloop.counter }}"
+                 data-bs-parent="#avaliacoesAccordion">
+                <div class="accordion-body">
+                    <table class="table table-bordered mb-1">
+                        <thead>
+                            <tr>
+                                <th>Etapa</th>
+                                <th>Valor Obtido</th>
+                                <th>Referência</th>
+                                <th>Interpretação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Força</td>
+                            <td>
+                                {% if questionario.respostas.forca %}
+                                    {{ questionario.respostas.forca }}
+                                {% else %}
+                                    <span class="etapa-descricao">Não avaliado</span>
+                                {% endif %}
+                            </td>
+                            <td>0 = Nenhuma, 1 = Alguma, 2 = Muita dificuldade/não consegue</td>
+                            <td>
+                                {% if questionario.respostas.forca %}
+                                    {% if questionario.respostas.forca == "2" %}
+                                        <span class="badge badge-grave">Fraqueza muscular</span>
+                                    {% elif questionario.respostas.forca == "1" %}
+                                        <span class="badge badge-alerta">Alguma dificuldade</span>
+                                    {% else %}
+                                        <span class="badge badge-normal">Sem dificuldade</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Ajuda para Caminhada</td>
+                            <td>
+                                {% if questionario.respostas.ajuda_caminhada %}
+                                    {{ questionario.respostas.ajuda_caminhada }}
+                                {% else %}
+                                    <span class="etapa-descricao">Não avaliado</span>
+                                {% endif %}
+                            </td>
+                            <td>0 = Nenhuma, 1 = Alguma, 2 = Muita/Usa apoio/Incapaz</td>
+                            <td>
+                                {% if questionario.respostas.ajuda_caminhada %}
+                                    {% if questionario.respostas.ajuda_caminhada == "2" %}
+                                        <span class="badge badge-grave">Mobilidade comprometida</span>
+                                    {% elif questionario.respostas.ajuda_caminhada == "1" %}
+                                        <span class="badge badge-alerta">Alguma dificuldade</span>
+                                    {% else %}
+                                        <span class="badge badge-normal">Sem dificuldade</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Levantar da Cadeira</td>
+                            <td>
+                                {% if questionario.respostas.levantar %}
+                                    {{ questionario.respostas.levantar }}
+                                {% else %}
+                                    <span class="etapa-descricao">Não avaliado</span>
+                                {% endif %}
+                            </td>
+                            <td>0 = Nenhuma, 1 = Alguma, 2 = Muita/Não consegue sem ajuda</td>
+                            <td>
+                                {% if questionario.respostas.levantar %}
+                                    {% if questionario.respostas.levantar == "2" %}
+                                        <span class="badge badge-grave">Não consegue levantar sem ajuda</span>
+                                    {% elif questionario.respostas.levantar == "1" %}
+                                        <span class="badge badge-alerta">Alguma dificuldade</span>
+                                    {% else %}
+                                        <span class="badge badge-normal">Sem dificuldade</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Subir Escadas</td>
+                            <td>
+                                {% if questionario.respostas.subir %}
+                                    {{ questionario.respostas.subir }}
+                                {% else %}
+                                    <span class="etapa-descricao">Não avaliado</span>
+                                {% endif %}
+                            </td>
+                            <td>0 = Nenhuma, 1 = Alguma, 2 = Muita dificuldade/não consegue</td>
+                            <td>
+                                {% if questionario.respostas.subir %}
+                                    {% if questionario.respostas.subir == "2" %}
+                                        <span class="badge badge-grave">Dificuldade importante</span>
+                                    {% elif questionario.respostas.subir == "1" %}
+                                        <span class="badge badge-alerta">Alguma dificuldade</span>
+                                    {% else %}
+                                        <span class="badge badge-normal">Sem dificuldade</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Quedas (últimos 12 meses)</td>
+                            <td>
+                                {% if questionario.respostas.queda %}
+                                    {{ questionario.respostas.queda }}
+                                {% else %}
+                                    <span class="etapa-descricao">Não avaliado</span>
+                                {% endif %}
+                            </td>
+                            <td>0 = Nenhuma, 1 = 1-3 quedas, 2 = 4 ou mais</td>
+                            <td>
+                                {% if questionario.respostas.queda %}
+                                    {% if questionario.respostas.queda == "2" %}
+                                        <span class="badge badge-grave">Alto risco de queda</span>
+                                    {% elif questionario.respostas.queda == "1" %}
+                                        <span class="badge badge-alerta">Algumas quedas</span>
+                                    {% else %}
+                                        <span class="badge badge-normal">Nenhuma queda</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Circunferência da Panturrilha</td>
+                            <td>
+                                {% if questionario.respostas.circunferencia_panturrilha %}
+                                    {{ questionario.respostas.circunferencia_panturrilha }} cm
+                                {% else %}
+                                    <span class="etapa-descricao">Não avaliado</span>
+                                {% endif %}
+                            </td>
+                            <td>Suspeita de Sarcopenia, Mulheres <= 33cm / Homens: <= 34cm</td>
+                            <td>
+                                {% if questionario.respostas.circunferencia_panturrilha %}
+                                    {% if questionario.paciente.sexo == 'F' %}
+                                        {% if questionario.respostas.circunferencia_panturrilha <= 33 %}
+                                            <span class="badge badge-grave">Menor que referência</span>
+                                        {% else %}
+                                            <span class="badge badge-normal">Adequado</span>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if questionario.respostas.circunferencia_panturrilha <= 34 %}
+                                            <span class="badge badge-grave">Menor que referência</span>
+                                        {% else %}
+                                            <span class="badge badge-normal">Adequado</span>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Segunda Etapa</td>
+                            <td>
+                                {% if questionario.respostas.segunda_etapa %}
+                                    {{ questionario.respostas.segunda_etapa }}
+                                {% else %}
+                                    <span class="etapa-descricao">Não avaliado</span>
+                                {% endif %}
+                                {% if questionario.respostas.valor_segunda_etapa %}
+                                    - {{ questionario.respostas.valor_segunda_etapa }}
+                                {% endif %}
+                            </td>
+                            <td>Ver protocolo (força preensão ou levantar/sentar)</td>
+                            <td>
+                                {% if questionario.respostas.segunda_etapa %}
+                                    {% if questionario.respostas.segunda_etapa == "Forca Preensar" %}
+                                        {% if questionario.paciente.sexo == "F" %}
+                                            {% if questionario.respostas.valor_segunda_etapa < 16 %}
+                                                <span class="badge badge-grave">Fraqueza muscular</span>
+                                            {% else %}
+                                                <span class="badge badge-normal">Normal</span>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if questionario.respostas.valor_segunda_etapa < 27 %}
+                                                <span class="badge badge-grave">Fraqueza muscular</span>
+                                            {% else %}
+                                                <span class="badge badge-normal">Normal</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% else %}
+                                        {% if questionario.respostas.valor_segunda_etapa > 15 %}
+                                            <span class="badge badge-alerta">Desempenho reduzido</span>
+                                        {% else %}
+                                            <span class="badge badge-normal">Normal</span>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Terceira Etapa</td>
+                            <td>
+                                {% if questionario.respostas.terceira_etapa %}
+                                    {{ questionario.respostas.terceira_etapa }}
+                                {% else %}
+                                    <span class="etapa-descricao">Não avaliado</span>
+                                {% endif %}
+                                {% if questionario.respostas.valor_terceira_etapa %}
+                                    - {{ questionario.respostas.valor_terceira_etapa }}
+                                {% endif %}
+                            </td>
+                            <td>Ver protocolo (MMEA ou IMMEA)</td>
+                            <td>
+                                {% if questionario.respostas.terceira_etapa %}
+                                    {% if questionario.respostas.terceira_etapa == "MMEA" %}
+                                        {% if questionario.paciente.sexo == "F" %}
+                                            {% if questionario.respostas.valor_terceira_etapa < 20 %}
+                                                <span class="badge badge-grave">Massa muscular baixa</span>
+                                            {% else %}
+                                                <span class="badge badge-normal">Normal</span>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if questionario.respostas.valor_terceira_etapa < 15 %}
+                                                <span class="badge badge-grave">Massa muscular baixa</span>
+                                            {% else %}
+                                                <span class="badge badge-normal">Normal</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% else %}
+                                        {% if questionario.paciente.sexo == "F" %}
+                                            {% if questionario.respostas.valor_terceira_etapa < 6.4 %}
+                                                <span class="badge badge-grave">Baixa (IMMEA)</span>
+                                            {% else %}
+                                                <span class="badge badge-normal">Normal</span>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if questionario.respostas.valor_terceira_etapa < 8.9 %}
+                                                <span class="badge badge-grave">Baixa (IMMEA)</span>
+                                            {% else %}
+                                                <span class="badge badge-normal">Normal</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Velocidade da Caminhada</td>
+                            <td>
+                                {% if questionario.respostas.valor_quarta_etapa %}
+                                    {{ questionario.respostas.valor_quarta_etapa }} s
+                                {% else %}
+                                    <span class="etapa-descricao">Não avaliado</span>
+                                {% endif %}
+                            </td>
+                            <td>Tempo para 4 metros (&le; 5s = &ge; 0,8m/s)</td>
+                            <td>
+                                {% if questionario.respostas.valor_quarta_etapa %}
+                                    {% with velocidade=4|divisibleby:questionario.respostas.valor_quarta_etapa %}
+                                        {% if velocidade <= 0.8 %}
+                                            <span class="badge badge-grave">Caminhada lenta (grave)</span>
+                                        {% else %}
+                                            <span class="badge badge-normal">Normal</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
-    {% empty %}
+        {% empty %}
         <div class="card card-custom">
             <div class="card-body">
                 <p class="text-center text-muted mb-0">Nenhum questionário disponível no histórico.</p>
             </div>
         </div>
-    {% endfor %}
-    
+        {% endfor %}
+    </div>
 </div>
+
+<script>
+    async function iniciarDownload(event, elemento) {
+        event.preventDefault();
+        event.stopPropagation(); 
+        
+        const url = elemento.getAttribute('href');
+        
+        const textoOriginal = elemento.querySelector('.texto-original');
+        const textoLoading = elemento.querySelector('.texto-loading');
+        
+        elemento.classList.add('disabled'); 
+        elemento.style.pointerEvents = 'none';
+        textoOriginal.classList.add('d-none');
+        textoLoading.classList.remove('d-none');
+
+        try {
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error('Erro na geração do PDF');
+            }
+
+            const blob = await response.blob();
+            
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.style.display = 'none';
+
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let fileName = 'diagnostico_sarcopenia.pdf';
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+                if (fileNameMatch && fileNameMatch.length === 2) {
+                    fileName = fileNameMatch[1];
+                }
+            }
+            a.download = fileName;
+            
+            document.body.appendChild(a);
+            a.click();
+            
+            window.URL.revokeObjectURL(downloadUrl);
+            document.body.removeChild(a);
+
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Ocorreu um erro ao gerar o PDF. Tente novamente.');
+        } finally {
+            elemento.classList.remove('disabled');
+            elemento.style.pointerEvents = 'auto';
+            textoOriginal.classList.remove('d-none');
+            textoLoading.classList.add('d-none');
+        }
+    }
+</script>
+
 {% endblock %}

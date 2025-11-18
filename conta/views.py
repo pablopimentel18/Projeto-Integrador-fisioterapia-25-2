@@ -12,8 +12,57 @@ from django.template.defaultfilters import stringfilter
 from django.utils import timezone
 import time
 from django.contrib import messages
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
+import tempfile
+from io import BytesIO
 
 register = template.Library()
+
+@login_required
+def exportar_diagnostico_pdf(request, questionario_id):
+    questionario = get_object_or_404(Questionario, id=questionario_id)
+    paciente = questionario.paciente
+    respostas = questionario.respostas
+    
+    total_pontos = 0
+    chaves_sarc_f = ['forca', 'ajuda_caminhada', 'levantar', 'subir', 'queda']
+    
+    for chave in chaves_sarc_f:
+        valor = respostas.get(chave)
+        if valor is not None and str(valor).isdigit():
+            total_pontos += int(valor)
+
+    context = {
+        'paciente': paciente,
+        'questionario': questionario,
+        'avaliacao': questionario,
+        'respostas': respostas,
+        'diagnostico': questionario.diagnostico,
+        'total_pontos': total_pontos,
+        'now': timezone.localtime(timezone.now()),
+    }
+
+    html_string = render_to_string('conta/diagnostico_pdf.html', context)
+
+    try:
+        buffer = BytesIO()
+        HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf(buffer)
+        pdf = buffer.getvalue()
+        buffer.close()
+
+        nome_paciente = ''.join(c for c in paciente.nome if c.isalnum() or c in ['_','-']).replace(' ', '_')
+        data_avaliacao = questionario.data.strftime('%d-%m-%Y')
+        nome_arquivo = f'avaliacao_{nome_paciente}_{data_avaliacao}.pdf'
+
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{nome_arquivo}"'
+        return response
+
+    except Exception as e:
+        print(f"ERRO AO GERAR PDF: {e}")
+        return HttpResponse(f"Erro ao gerar PDF: {e}", status=500)
 
 @register.filter(name='split')
 @stringfilter

@@ -5,3 +5,17 @@ mysql-connector-python==9.4.0
 packaging==25.0
 sqlparse==0.5.3
 tzdata==2025.2
+WeasyPrint==66.0
+
+# SE FOR USAR DOCKER IA DISSE QUE TEM Q BOTAR ISSO (POR CONTA DA LIB QUE NAO INSTALA COM PIP)
+# No seu Dockerfile, antes de instalar o requirements.txt
+# RUN apt-get update && apt-get install -y \
+#     python3-pip \
+#     python3-cffi \
+#     python3-brotli \
+#     libpango-1.0-0 \
+#     libpangoft2-1.0-0 \
+#     libharfbuzz-subset0 \
+#     libjpeg-dev \
+#     libopenjp2-7-dev \
+#     libffi-dev

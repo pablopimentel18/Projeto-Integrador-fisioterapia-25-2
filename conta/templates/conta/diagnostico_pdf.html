@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Avaliação SARC-F</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.3;
+            font-size: 11pt;
+        }
+        
+        .header {
+            background-color: #6366f1;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        
+        .header h1 {
+            font-size: 22pt;
+            font-weight: bold;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        
+        .header h2 {
+            font-size: 11pt;
+            font-weight: normal;
+            margin-top: 5px;
+            opacity: 0.95;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .info-table td {
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #8b5cf6;
+            width: 50%;
+        }
+        
+        .label {
+            font-size: 8pt;
+            font-weight: bold;
+            color: #6366f1;
+            text-transform: uppercase;
+            display: block;
+        }
+        
+        .value {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .section-title {
+            font-size: 13pt;
+            font-weight: bold;
+            color: #4f46e5;
+            border-bottom: 2px solid #e0e7ff;
+            padding-bottom: 3px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .dados-table td {
+            padding: 6px;
+            border-bottom: 1px solid #eee;
+        }
+        .dados-table .lbl {
+            font-weight: bold;
+            color: #666;
+            font-size: 9pt;
+            width: 25%;
+        }
+        
+        .resultado-box {
+            background-color: #6366f1;
+            color: white;
+            padding: 25px 15px; /* Mais espaçamento vertical */
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+        
+        .resultado-box h3 {
+            margin: 0;
+            font-size: 12pt;
+            opacity: 0.9;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .classificacao {
+            background-color: rgba(255,255,255,0.25);
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            margin: 15px 0;
+            font-weight: bold;
+            font-size: 20pt; /* Fonte bem grande */
+            text-transform: uppercase;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .recomendacao {
+            font-size: 11pt;
+            margin-top: 5px;
+            font-weight: 500;
+            background-color: rgba(0,0,0,0.1);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 4px;
+        }
+
+        .respostas-table th {
+            text-align: left;
+            background-color: #f3f4f6;
+            padding: 8px;
+            color: #4f46e5;
+            font-size: 9pt;
+            text-transform: uppercase;
+        }
+        
+        .respostas-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+        }
+        
+        .respostas-table .etapa {
+            font-weight: bold;
+            color: #333;
+            width: 45%;
+            font-size: 10pt;
+        }
+        
+        .etapa-pergunta {
+            font-weight: normal;
+            font-size: 9pt;
+            color: #555;
+            margin-top: 2px;
+            font-style: italic;
+        }
+
+        .resposta-valor {
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 3px;
+            font-size: 10pt;
+        }
+        
+        .respostas-table .ref {
+            font-size: 8pt;
+            color: #666;
+        }
+
+        .comp-container {
+            background-color: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .comp-item {
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #e5e7eb;
+            padding-bottom: 10px;
+        }
+        
+        .comp-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .comp-title {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #d97706;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .comp-val {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 4px;
+        }
+
+        .comp-ref {
+            font-size: 8.5pt;
+            color: #6b7280;
+            font-style: italic;
+            background: rgba(255,255,255,0.5);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        /* Observações */
+        .obs-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            font-size: 9pt;
+            color: #1e3a8a;
+            text-align: justify;
+            margin-top: 20px;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 8pt;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>LAUDO DE AVALIAÇÃO SARC-F</h1>
+        <h2>Risco de Sarcopenia</h2>
+    </div>
+    
+    <table class="info-table" cellspacing="10">
+        <tr>
+            <td>
+                <span class="label">Data da Avaliação</span>
+                <div class="value">{{ questionario.data|date:"d/m/Y" }}</div>
+            </td>
+            <td>
+                <span class="label">Avaliador</span>
+                <div class="value">{{ questionario.avaliador.nome }}</div>
+            </td>
+        </tr>
+    </table>
+    
+    <div class="section-title">Dados do Paciente</div>
+    
+    <table class="dados-table">
+        <tr>
+            <td class="lbl">Nome Completo:</td>
+            <td class="val" colspan="3">{{ paciente.nome }}</td>
+        </tr>
+        <tr>
+            <td class="lbl">Idade:</td>
+            <td class="val" colspan="3">{{ paciente.idade }} anos</td>
+        </tr>
+        <tr>
+            <td class="lbl">Sexo:</td>
+            <td class="val">{{ paciente.get_sexo_display }}</td>
+            <td class="lbl">Estatura:</td>
+            <td class="val">{{ paciente.estatura }} cm</td>
+        </tr>
+    </table>
+    
+    <div class="resultado-box">
+        <h3>DIAGNÓSTICO CONCLUSIVO</h3>
+        
+        <div class="classificacao">
+            {{ diagnostico|cut:"." }}
+        </div>
+        
+        <br>
+        
+        <div class="recomendacao">
+            {% if "grave" in diagnostico|lower or "confirmada" in diagnostico|lower %}
+                ⚠ NECESSÁRIO ACOMPANHAMENTO ESPECIALIZADO
+            {% elif "provável" in diagnostico|lower %}
+                ⚠ RECOMENDA-SE AVALIAÇÃO COMPLEMENTAR
+            {% else %}
+                ✓ BAIXO RISCO NO MOMENTO
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="section-title">Questionário SARC-F (Primeira Etapa)</div>
+    
+    <table class="respostas-table">
+        <thead>
+            <tr>
+                <th>Etapa / Pergunta</th>
+                <th>Resposta e Pontuação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="etapa">
+                    Força
+                    <div class="etapa-pergunta">Quanto de dificuldade você tem para levantar e carregar 5 kg?</div>
+                </td>
+                <td>
+                    <div class="resposta-valor">{{ respostas.forca|default:"-" }}</div>
+                    <div class="ref">0 = Nenhuma | 1 = Alguma | 2 = Muita dificuldade/não consegue</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="etapa">
+                    Ajuda na Caminhada
+                    <div class="etapa-pergunta">Quanto de dificuldade você tem para atravessar um cômodo?</div>
+                </td>
+                <td>
+                    <div class="resposta-valor">{{ respostas.ajuda_caminhada|default:"-" }}</div>
+                    <div class="ref">0 = Nenhuma | 1 = Alguma | 2 = Muita/Usa apoio/Incapaz</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="etapa">
+                    Levantar da Cadeira
+                    <div class="etapa-pergunta">Quanto de dificuldade você tem para levantar-se de uma cama ou cadeira?</div>
+                </td>
+                <td>
+                    <div class="resposta-valor">{{ respostas.levantar|default:"-" }}</div>
+                    <div class="ref">0 = Nenhuma | 1 = Alguma | 2 = Muita/Não consegue sem ajuda</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="etapa">
+                    Subir Escadas
+                    <div class="etapa-pergunta">Quanto de dificuldade você tem para subir um lance de escadas de 10 degraus?</div>
+                </td>
+                <td>
+                    <div class="resposta-valor">{{ respostas.subir|default:"-" }}</div>
+                    <div class="ref">0 = Nenhuma | 1 = Alguma | 2 = Muita dificuldade/não consegue</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="etapa">
+                    Quedas
+                    <div class="etapa-pergunta">Quantas vezes você caiu nos últimos 12 meses?</div>
+                </td>
+                <td>
+                    <div class="resposta-valor">{{ respostas.queda|default:"-" }}</div>
+                    <div class="ref">0 = Nenhuma | 1 = 1-3 quedas | 2 = 4 ou mais</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="etapa">
+                    Circunf. Panturrilha
+                    <div class="etapa-pergunta">Medida da maior circunferência da perna</div>
+                </td>
+                <td>
+                    <div class="resposta-valor">{{ respostas.circunferencia_panturrilha|default:"-" }}</div>
+                    <div class="ref">Suspeita de sarcopenia se: Homens ≤ 34cm | Mulheres ≤ 33cm</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    {% if avaliacao.respostas.segunda_etapa or avaliacao.respostas.terceira_etapa or avaliacao.respostas.valor_quarta_etapa %}
+    <div class="section-title">Avaliações Complementares</div>
+    
+    <div class="comp-container">
+        {% if avaliacao.respostas.segunda_etapa %}
+        <div class="comp-item">
+            <div class="comp-title">Segunda Etapa (Força) - {{ avaliacao.respostas.segunda_etapa }}</div>
+            <div class="comp-val">Valor Obtido: {{ avaliacao.respostas.valor_segunda_etapa }}</div>
+            <div class="comp-ref">
+                {% if avaliacao.respostas.segunda_etapa == 'Forca Preensar' %}
+                <strong>Indicativo de Sarcopenia se:</strong> Homens < 27 kg | Mulheres < 16 kg
+                {% else %}
+                <strong>Indicativo de Sarcopenia se:</strong> Tempo ≥ 15 segundos (desempenho reduzido)
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if avaliacao.respostas.terceira_etapa %}
+        <div class="comp-item">
+            <div class="comp-title">Terceira Etapa (Massa Muscular) - {{ avaliacao.respostas.terceira_etapa }}</div>
+            <div class="comp-val">Valor Obtido: {{ avaliacao.respostas.valor_terceira_etapa }}</div>
+            <div class="comp-ref">
+                {% if avaliacao.respostas.terceira_etapa == 'MMEA' %}
+                <strong>Indicativo de Sarcopenia se:</strong> Homens < 15 kg | Mulheres < 20 kg
+                {% else %}
+                <strong>Indicativo de Sarcopenia se:</strong> Homens < 8.9 kg/m² | Mulheres < 6.4 kg/m²
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if avaliacao.respostas.valor_quarta_etapa %}
+        <div class="comp-item">
+            <div class="comp-title">Quarta Etapa (Performance Física)</div>
+            <div class="comp-val">Velocidade de Marcha: {{ avaliacao.respostas.valor_quarta_etapa }} segundos</div>
+            <div class="comp-ref">
+                <strong>Indicativo de Sarcopenia Grave se:</strong> Velocidade ≤ 0.8 m/s (ou tempo total ≥ 5s)
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <div class="obs-box">
+        <strong>Observações Clínicas:</strong> O questionário SARC-F é uma ferramenta de triagem validada para identificação de risco de sarcopenia em idosos. Uma pontuação ≥ 4 indica risco aumentado e necessidade de avaliação diagnóstica mais detalhada.
+    </div>
+    
+    <div class="footer">
+        Documento gerado via Sarcopenia App em {{ now|date:"d/m/Y" }} às {{ now|date:"H:i" }}
+    </div>
+</body>
+</html>
