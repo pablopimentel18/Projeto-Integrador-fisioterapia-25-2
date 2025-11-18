@@ -20,9 +20,9 @@
 
             <div class="d-flex flex-column gap-3">
                 
-                <a href="{% url 'avaliar_primeira_etapa' paciente.id %}" class="btn btn-principal btn-lg">Avaliação para pacientes de peso ideal</a>
+                <a href="{% url 'avaliar_primeira_etapa' questionario.id %}" class="btn btn-principal btn-lg">Avaliação para pacientes de peso ideal</a>
                 
-                <a href="{% url 'avaliar_primeira_etapa' paciente.id %}" class="btn btn-principal btn-lg">Avaliação para pacientes obesos</a>
+                <a href="{% url 'avaliar_primeira_etapa_obeso' questionario.id %}" class="btn btn-principal btn-lg">Avaliação para pacientes obesos</a>
             </div>
         </div>
     </div>

@@ -260,25 +260,27 @@ def paciente_delete(request, paciente_id):
         }
     return render(request, 'content.html', context)
 
+	
 @login_required
 def tipo_avaliacao(request, paciente_id): 
     """ Esta view é responsável por escolher o tipo de avaliação do paciente """
     """ Ela também instância um novo questionário para o paciente """
     paciente = get_object_or_404(Paciente, id=paciente_id)
 
-    qtd_questionarios = Questionario.objects.count()
-    questionario = Questionario()
-    questionario.id = (qtd_questionarios+1)
-    questionario.paciente = paciente
-    questionario.avaliador = paciente.avaliador
-    questionario.data = timezone.now().date()
-    questionario.save()
+    questionario = Questionario.objects.create(
+        paciente=paciente,
+        avaliador=paciente.avaliador,
+        data=timezone.now(),
+        respostas = {},
+    )
 
     context = {
         'paciente': paciente,
         'questionario': questionario,
     }
+    
     return render(request, 'conta/tipo_avaliacao.html', context)
+
 
 
 @login_required
@@ -294,7 +296,7 @@ def primeira_etapa_avaliacao(request, questionario_id):
 
         if form.is_valid():
             dados_avaliacao = form.cleaned_data
-
+            questionario.tipo = 'N'
             questionario.respostas.update(dados_avaliacao)
             questionario.save()
             dados_avaliacao.values()
@@ -541,6 +543,65 @@ def quarta_etapa_avaliacao(request, questionario_id):
 
     return render(request, 'conta/quarta_etapa_avaliacao.html', context)
 
+
+def primeira_etapa_avaliacao_obeso(request, questionario_id):
+    """ Esta view é responsável por realizar a avaliação do paciente obeso """
+
+    questionario = get_object_or_404(Questionario, id=questionario_id)
+    paciente = questionario.paciente
+
+    pontuacao = 0
+    if request.method == 'POST':
+        form = QuestionarioSarcopeniaForm(request.POST)
+
+        if form.is_valid():
+            dados_avaliacao = form.cleaned_data
+            questionario.tipo = 'O'
+            questionario.respostas.update(dados_avaliacao)
+            questionario.save()
+            dados_avaliacao.values()
+            for resposta in dados_avaliacao.values():
+
+                if int(resposta) <=2:
+                    pontuacao += int(resposta)
+                
+                else:
+                    if(paciente.sexo == 'F'):
+                        if(int(resposta) <= 33):
+                            pontuacao += 10
+                        else:
+                            pontuacao +=0
+                    else:
+                        if(int(resposta) <= 34):
+                            pontuacao += 10
+                        else:
+                            pontuacao +=0
+
+            if(pontuacao>=11):
+                questionario.save()
+                resultado_texto = "Paciente Atingiu mais de 11 pontos.\nReferente à potencial diagnóstico de Sarcopenia!."
+
+                messages.success(request, resultado_texto)
+                return redirect('avaliar_segunda_etapa', questionario_id=questionario.id)
+
+            questionario.diagnostico = 'Paciente sem sarcopenia. *Obeso'
+            questionario.save()
+
+            resultado_texto = "Paciente Sem Sarcopenia *Obeso"
+
+            messages.success(request, resultado_texto)
+
+            return redirect('diagnostico', questionario_id=questionario.id)
+ 
+    else:
+        form = QuestionarioSarcopeniaForm()
+    
+    context = {
+        'form': form,
+        'paciente': paciente,
+    }
+    return render(request, 'conta/primeira_etapa_avaliacao_obeso.html', context)
+
 @login_required
 def diagnostico(request, questionario_id):
     """ Esta view é responsável por exibir o diagnóstico final do paciente """
@@ -556,6 +617,8 @@ def diagnostico(request, questionario_id):
             grave=True
 
 
+    print(questionario.tipo)
+
     context = {
         'paciente': paciente,
         'respostas': respostas,
@@ -568,9 +631,17 @@ def diagnostico(request, questionario_id):
 def questionario_list(request, paciente_id):
     """ Esta view é responsável por listar todos os questionarios de um paciente específico """
     paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    Questionario.objects.filter(
+        paciente=paciente, 
+        diagnostico__isnull=True
+    ).delete()
+
     questionarios = Questionario.objects.filter(paciente=paciente).order_by('-data')
+
     context = {
         'questionarios': questionarios,
         'paciente': paciente,
     }
     return render(request, 'conta/questionario_list.html', context)
+	

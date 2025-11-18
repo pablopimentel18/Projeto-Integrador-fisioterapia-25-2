@@ -1,0 +1,144 @@
+{% extends 'menu.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .card-custom {
+        padding: 0 !important;
+    }
+
+    .card-custom .card-body {
+        padding: 2.5rem;
+    }
+
+    .card-custom .card-title {
+        color: var(--cor-principal);
+        font-weight: bold;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-custom .form-check-label {
+        font-size: 1.1rem;
+        padding-top: 2px;
+    }
+
+    .card-custom .form-check-input[type="radio"] {
+        transform: scale(1.4);
+        margin-right: 10px;
+    }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% if messages %}
+    {% for message in messages %}
+        <script>
+            Swal.fire({
+                title: 'Atenção!',
+                text: '{{ message|escapejs }}',
+                icon: 'warning'
+            });
+        </script>
+    {% endfor %}
+{% endif %}
+
+<div class="container mt-4">
+
+    <div class="text-center mb-4">
+        <img src="{% static 'imgs/1.JPG' %}" class="img-fluid rounded shadow" style="max-width: 800px;" alt="Fluxograma de Avaliação de Sarcopenia">
+    </div>
+
+    <h3 class="text-center mb-4">Realizando Avaliação de Sarcopenia para777777777: <span class="text-principal">{{ paciente.nome }}</span></h3>
+    <hr class="mb-5">
+    
+    <form method="post" onsubmit="return dispara()">
+        {% csrf_token %}
+
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ form.forca.label }}</h5>
+                <div class="form-group mt-3">
+                    {% for radio in form.forca %}
+                        <div class="form-check form-check-inline mb-2">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ form.ajuda_caminhada.label }}</h5>
+                <div class="form-group mt-3">
+                    {% for radio in form.ajuda_caminhada %}
+                        <div class="form-check form-check-inline mb-2">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ form.levantar.label }}</h5>
+                <div class="form-group mt-3">
+                    {% for radio in form.levantar %}
+                        <div class="form-check form-check-inline mb-2">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ form.subir.label }}</h5>
+                <div class="form-group mt-3">
+                    {% for radio in form.subir %}
+                        <div class="form-check form-check-inline mb-2">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ form.queda.label }}</h5>
+                <div class="form-group mt-3">
+                    {% for radio in form.queda %}
+                        <div class="form-check form-check-inline mb-2">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card card-custom mb-5">
+            <div class="card-body">
+                <h5 class="card-title">{{ form.circunferencia_panturrilha.label }}</h5>
+                <div class="form-group mt-3">
+                    {{ form.circunferencia_panturrilha }}
+                    <small class="form-text text-muted">Informe a medida em centímetros.</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mb-5">
+            <button type="submit" class="btn btn-principal btn-lg" >Salvar Avaliação</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
