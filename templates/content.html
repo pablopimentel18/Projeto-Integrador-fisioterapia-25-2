@@ -1,30 +1,182 @@
 {% extends 'menu.html' %}
+{% load static %}
 {% block content %}
 
-<div class="container mt-5">
-    <div class="card-custom">
-        <div class="text-center mb-5">
-            <h1>Bem-vindo ao Projeto!</h1>
-            <h3 class="text-secondary mt-2">Ferramentas e informações ao seu alcance</h3>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+    :root {
+        --cor-principal: #5c5f96;
+        --cor-secundaria: #8b5cf6;
+        --cor-principal-hover: #4a4d7c; /* Definindo a cor de hover */
+    }
+    
+    .hero-section {
+        background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-secundaria) 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 15px;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 25px rgba(92, 95, 150, 0.2);
+    }
+
+    /* Garantir que o H1 seja o mais visível possível */
+    .hero-section h1 {
+        color: white !important;
+        opacity: 1 !important;
+    }
+
+    /* NOVO ESTILO PARA O BOTÃO DE LOGIN NA ÁREA DESLOGADA */
+    .btn-hero-login {
+        background-color: var(--cor-principal);
+        border-color: var(--cor-principal);
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-hero-login:hover {
+        background-color: var(--cor-principal-hover);
+        border-color: var(--cor-principal-hover);
+        color: white;
+    }
+
+    .action-card {
+        border: none;
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        cursor: pointer;
+    }
+
+    .action-card .card-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .icon-circle {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: #f0f1fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: var(--cor-principal);
+        font-size: 1.8rem;
+    }
+
+    .card-title {
+        color: var(--cor-texto);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-text {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    /* Link que cobre o card todo */
+    .stretched-link::after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        content: "";
+    }
+</style>
+
+<div class="container mt-4">
+    
+    {% if user.is_authenticated %}
+        <div class="hero-section text-center text-md-start d-flex flex-column flex-md-row align-items-center justify-content-between">
+            <div>
+                <h1 class="fw-bold text-white">Olá, {{ user.first_name|default:user.username }}!</h1>
+                <p class="mb-0 text-white" style="font-size: 1.1rem;">Bem-vindo ao Sistema de Avaliação SARC-F.</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <i class="bi bi-activity" style="font-size: 3rem; opacity: 0.8;"></i>
+            </div>
         </div>
 
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                Conheça mais sobre o projeto e a equipe.
-                <a href="{% url 'sobre' %}" class="btn btn-principal">Ver Sobre</a>
-            </li>
-            {% if user.is_authenticated %}
-            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                Veja uma lista com todos os usuários cadastrados.
-                <a href="{% url 'usuario_list' user.id %}" class="btn btn-principal">Ver Usuários</a>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                Acesse e edite as informações do seu perfil.
-                <a href="{% url 'usuario_read' user.id %}" class="btn btn-principal">Ver Meu Perfil</a>
-            </li>
-            {% endif %}
-        </ul>
-    </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card action-card">
+                    <div class="card-body">
+                        <div class="icon-circle">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h5 class="card-title">Meus Pacientes</h5>
+                        <p class="card-text">Acesse a lista de pacientes, histórico e diagnósticos.</p>
+                        <a href="{% url 'usuario_list' user.id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card action-card">
+                    <div class="card-body">
+                        <div class="icon-circle">
+                            <i class="bi bi-person-plus-fill"></i>
+                        </div>
+                        <h5 class="card-title">Cadastrar Paciente</h5>
+                        <p class="card-text">Adicione um novo paciente para iniciar uma avaliação.</p>
+                        <a href="{% url 'create_paciente' user.id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card action-card">
+                    <div class="card-body">
+                        <div class="icon-circle">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <h5 class="card-title">Meu Perfil</h5>
+                        <p class="card-text">Edite seus dados de acesso e informações pessoais.</p>
+                        <a href="{% url 'usuario_read' user.id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 text-center">
+            <a href="{% url 'sobre' %}" class="text-muted text-decoration-none small">
+                <i class="bi bi-info-circle me-1"></i> Sobre o Projeto e a Equipe
+            </a>
+        </div>
+
+    {% else %}
+        <div class="text-center mt-5">
+            <div class="mb-4">
+                <i class="bi bi-heart-pulse-fill" style="font-size: 4rem; color: var(--cor-principal);"></i>
+            </div>
+            <h1 class="display-5 fw-bold" style="color: var(--cor-principal);">SarcopeniaSys</h1>
+            <p class="lead text-secondary mb-4">
+                Ferramenta auxiliar para diagnóstico e acompanhamento de Sarcopenia<br>
+                através do protocolo SARC-F e avaliações complementares.
+            </p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a href="{% url 'login' %}" class="btn btn-hero-login btn-lg px-4 gap-3">Entrar no Sistema</a>
+                <a href="{% url 'create_user' %}" class="btn btn-outline-secondary btn-lg px-4">Criar Conta</a>
+            </div>
+        </div>
+    {% endif %}
+
 </div>
 
 {% endblock content %}
