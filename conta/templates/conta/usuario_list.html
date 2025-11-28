@@ -11,7 +11,6 @@
         --cor-secundaria: #8b5cf6;
     }
 
-    /* Estilo para os botões principais de ação */
     .btn-avaliar {
         background-color: var(--cor-principal, #5c5f96);
         border-color: var(--cor-principal, #5c5f96);
@@ -24,7 +23,7 @@
     }
 
     .btn-historico {
-        background-color: #f0f1fa; /* Cor de fundo mais clara */
+        background-color: #f0f1fa;
         border-color: #d1d5db;
         color: var(--cor-principal, #5c5f96);
     }
@@ -32,7 +31,6 @@
         background-color: #e2e4f0;
     }
 
-    /* Estilo para o dropdown de ações administrativas */
     .btn-action-menu {
         color: var(--cor-principal, #5c5f96);
         border: 1px solid #d1d5db;
@@ -56,6 +54,20 @@
             </a>
         </div>
         
+        <form method="GET" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Pesquisar paciente pelo nome..." 
+                       value="{{ request.GET.q }}" aria-label="Pesquisar por nome">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i> Pesquisar
+                </button>
+                {% if request.GET.q %}
+                    <a href="{% url 'usuario_list' user.id %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-lg"></i> Limpar
+                    </a>
+                {% endif %}
+            </div>
+        </form>
         {% if pacientes %}
         <table class="table table-hover">
             <thead>
@@ -70,7 +82,7 @@
             <tbody>
                 {% for paciente in pacientes %}
                 <tr>
-                    <td>{{ paciente }}</td>
+                    <td>{{ paciente.nome }}</td> 
                     <td>{{ paciente.email }}</td>
                     
                     <td>{{ paciente.numero_telefone|mask_phone }}</td>
@@ -119,8 +131,7 @@
 </div>
 
 <script>
-    // Função para confirmar a exclusão do paciente (usada no botão Deletar)
-    function user_deletado() {
+    function user_deletado(event) {
         if (!confirm('Tem certeza que deseja deletar este paciente? Esta ação é irreversível.')) {
             event.preventDefault(); 
         }

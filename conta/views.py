@@ -159,17 +159,20 @@ def usuario_update(request, user_id):
 
 @login_required
 def usuario_list(request, usuario_id):
-    """ Esta view é responsável por listar todos os usuario que estão cadastrados no banco de dados """
+    """ 
+    Lista os pacientes associados ao avaliador (usuario_id) e permite a pesquisa por nome. 
+    """
+    
     avaliador = get_object_or_404(Usuario, pk=usuario_id)
-    usuarios = Paciente.objects.all()
-    usuarios_validados = []
-    for paciente in usuarios:
-        if paciente.avaliador == avaliador:
-            usuarios_validados.append(paciente)
+    pacientes_base = Paciente.objects.filter(avaliador=avaliador)
+    query = request.GET.get('q')
+    
+    if query:
+        pacientes_base = pacientes_base.filter(nome__icontains=query)
+    
     context = {
-        'pacientes': usuarios_validados
+        'pacientes': pacientes_base,
     }
-
     return render(request, 'conta/usuario_list.html', context)
 
 @login_required
