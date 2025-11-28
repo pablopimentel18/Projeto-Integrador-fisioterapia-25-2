@@ -605,17 +605,25 @@ def questionario_list(request, paciente_id):
     }
     return render(request, 'conta/questionario_list.html', context)
 	
-
 @login_required
 def aluno_list(request):
-    """ Esta view é responsável por listar todos os alunos cadastrados no sistema """
-
+    """ 
+    Lista todos os Avaliadores (tipo 'A') e permite pesquisa por nome. 
+    Acesso restrito a professores (tipo 'P').
+    """
+    search_query = request.GET.get('q')
+    
     try:
         if request.user.usuario.tipo_usuario == 'P':
-            alunos_avaliadores = Usuario.objects.filter(tipo_usuario='A').select_related('user')
-         
+            
+            alunos_avaliadores = Usuario.objects.filter(tipo_usuario='A').select_related('user').order_by('nome')
+            
+            if search_query:
+                alunos_avaliadores = alunos_avaliadores.filter(nome__icontains=search_query)
+
             context = {
                 'alunos': alunos_avaliadores,
+                'search_query': search_query, 
             } 
         else:
             return HttpResponse("Acesso negado. Apenas professores administradores podem acessar esta página.", status=403)
@@ -632,10 +640,7 @@ def aluno_avaliacoes(request, usuario_id):
 
     if aluno.tipo_usuario != 'A':
         return HttpResponse("Acesso negado. O usuário especificado não é um aluno avaliador.", status=403)
-
-
     else:
-
         pacientes = Paciente.objects.filter(avaliador=aluno)
         avaliacoes = Questionario.objects.filter(paciente__in=pacientes).order_by('-data')
 
@@ -643,5 +648,10 @@ def aluno_avaliacoes(request, usuario_id):
             'aluno': aluno,
             'avaliacoes': avaliacoes,
         }
-    
     return render(request, 'conta/aluno_avaliacoes.html', context)
+
+@login_required
+def relatorios_gerais(request):
+    """ Exibe a página 'Em Desenvolvimento' para a área de relatórios. """
+        
+    return render(request, 'conta/relatorio_professor.html') 

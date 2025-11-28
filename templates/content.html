@@ -20,13 +20,11 @@
         box-shadow: 0 10px 25px rgba(92, 95, 150, 0.2);
     }
 
-    /* Garantir que o H1 seja o mais visível possível */
     .hero-section h1 {
         color: white !important;
         opacity: 1 !important;
     }
 
-    /* NOVO ESTILO PARA O BOTÃO DE LOGIN NA ÁREA DESLOGADA */
     .btn-hero-login {
         background-color: var(--cor-principal);
         border-color: var(--cor-principal);
@@ -88,7 +86,6 @@
         font-size: 0.9rem;
     }
     
-    /* Link que cobre o card todo */
     .stretched-link::after {
         position: absolute;
         top: 0;
@@ -163,16 +160,61 @@
     {% elif user.usuario.tipo_usuario == 'P' %}
         <div class="hero-section text-center text-md-start d-flex flex-column flex-md-row align-items-center justify-content-between">
             <div>
-                <h1 class="fw-bold text-white">Olá, Professor {{ user.usuario.nome }}!</h1>
-                <p class="mb-0 text-white" style="font-size: 1.1rem;">Bem-vindo ao Sistema de Avaliação SARC-F.</p>
+                <h1 class="fw-bold text-white">Olá, Professor(a) {{ user.usuario.nome|default:user.username }}!</h1>
+                <p class="mb-0 text-white" style="font-size: 1.1rem;">Bem-vindo ao Painel de Supervisão e Gerenciamento.</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <i class="bi bi-person-workspace" style="font-size: 3rem; opacity: 0.8;"></i>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            
+            <div class="col-md-4">
+                <div class="card action-card">
+                    <div class="card-body">
+                        <div class="icon-circle">
+                            <i class="bi bi-mortarboard-fill"></i>
+                        </div>
+                        <h5 class="card-title">Gerenciar Avaliadores</h5>
+                        <p class="card-text">Acesse a lista de usuários com permissão de avaliação.</p>
+                        <a href="{% url 'aluno_list' %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
 
-                <a href="{% url 'aluno_list' %}" class="btn btn-light btn-lg mt-3">
-                    <i class="bi bi-people-fill me-2"></i> Gerenciar Alunos Avaliadores
+            <div class="col-md-4">
+                <div class="card action-card">
+                    <div class="card-body">
+                        <div class="icon-circle">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                        <h5 class="card-title">Visão Geral & Relatórios</h5>
+                        <p class="card-text">Acompanhe a atividade total do sistema e as estatísticas de uso.</p>
+                        <a href="{% url 'relatorios_gerais' %}" class="stretched-link"></a> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card action-card">
+                    <div class="card-body">
+                        <div class="icon-circle">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <h5 class="card-title">Meu Perfil</h5>
+                        <p class="card-text">Edite seus dados de acesso e informações de contato.</p>
+                        <a href="{% url 'usuario_read' user.id %}" class="stretched-link"></a>
+                    </div>
+                </div>
             </div>
         </div>
 
-
-
+        <div class="mt-5 text-center">
+            <a href="{% url 'sobre' %}" class="text-muted text-decoration-none small">
+                <i class="bi bi-info-circle me-1"></i> Sobre o Projeto e a Equipe
+            </a>
+        </div>
 
     {% else %}
         <div class="text-center mt-5">

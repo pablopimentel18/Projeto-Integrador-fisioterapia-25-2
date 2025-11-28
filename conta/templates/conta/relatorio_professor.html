@@ -1,0 +1,41 @@
+{% extends 'menu.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .development-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 70vh;
+        text-align: center;
+    }
+    .icon-large {
+        font-size: 5rem;
+        color: #5c5f96;
+        margin-bottom: 20px;
+    }
+    .title-dev {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #343a40;
+    }
+    .subtitle-dev {
+        font-size: 1.2rem;
+        color: #6c757d;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="development-container">
+        <i class="bi bi-gear-wide-connected icon-large"></i>
+        <h1 class="title-dev">Em Desenvolvimento</h1>
+        <p class="subtitle-dev">
+            "Visão Geral e Relatórios" encontra-se em construção no momento.
+        </p>
+        <a href="{% url 'index' %}" class="btn btn-primary mt-3" style="background-color: #5c5f96; border-color: #5c5f96;">Voltar ao Painel Principal</a>
+    </div>
+</div>
+
+{% endblock content %}

@@ -2,6 +2,8 @@
 {% load static %}
 {% block content%}
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
 <style>
     .card-custom {
         padding: 0 !important;
@@ -9,48 +11,102 @@
     .card-custom .card-body {
         padding: 2.5rem;
     }
+    .form-aligned .errorlist {
+        list-style: none;
+        padding-left: 0;
+        grid-column: 2;
+        color: #dc3545;
+        font-size: 0.85em;
+        margin-top: 0.25rem;
+    }
+    .form-section-title {
+        color: var(--cor-principal);
+        font-size: 1.1em;
+        font-weight: 600;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #ddd;
+        grid-column: 1 / -1;
+    }
+    .credentials-box {
+        background-color: #f0f1fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
 </style>
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-9">
             <div class="card card-custom">
                 <div class="card-body">
                     
                     <h3 class="text-center mb-4 text-principal" style="font-weight: bold;">Criar Nova Conta</h3>
                     <hr class="mb-5">
                     
+                    {% if form_user.errors or form_usuario.errors %}
+                        <div class="alert alert-danger" style="grid-column: 1 / -1;">
+                            ⚠ Ocorreu um erro de validação. Verifique os campos em destaque.
+                        </div>
+                    {% endif %}
+
                     <form action="{% url 'create_user'%}" method="post" class="form-aligned">
                         {% csrf_token %}
 
-                        <div class="mb-3">
-                            <label for="{{ form_user.username.id_for_label }}" class="form-label">Nome de Usuário</label>
-                            {{ form_user.username }}
+                        <div class="form-section-title credentials-box">
+                            <i class="bi bi-lock-fill me-2"></i> Credenciais de Acesso
+                        </div>
+
+                        <div class="row g-3" style="grid-column: 1 / -1;">
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form_user.username.id_for_label }}" class="form-label">Nome de Usuário</label>
+                                {{ form_user.username }}
+                                {{ form_user.username.errors }} 
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form_user.password.id_for_label }}" class="form-label">Senha</label>
+                                {{ form_user.password }}
+                                {{ form_user.password.errors }}
+                            </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="{{ form_user.password.id_for_label }}" class="form-label">Senha</label>
-                            {{ form_user.password }}
+                        <div class="form-section-title mt-4">
+                            <i class="bi bi-person-lines-fill me-2"></i> Informações Pessoais
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form_usuario.nome.id_for_label }}" class="form-label">Nome Completo</label>
-                            {{ form_usuario.nome }}
+
+                        <div class="row g-3" style="grid-column: 1 / -1;">
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form_usuario.nome.id_for_label }}" class="form-label">Nome Completo</label>
+                                {{ form_usuario.nome }}
+                                {{ form_usuario.nome.errors }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form_usuario.email.id_for_label }}" class="form-label">E-mail</label>
+                                {{ form_usuario.email }}
+                                {{ form_usuario.email.errors }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form_usuario.numero_telefone.id_for_label }}" class="form-label">Telefone</label>
+                                {{ form_usuario.numero_telefone }}
+                                {{ form_usuario.numero_telefone.errors }}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form_usuario.data_nascimento.id_for_label }}" class="form-label">Data de Nascimento</label>
+                                {{ form_usuario.data_nascimento }}
+                                {{ form_usuario.data_nascimento.errors }} 
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form_usuario.tipo_usuario.id_for_label }}" class="form-label">Tipo de Usuário</label>
+                                {{ form_usuario.tipo_usuario }}
+                                {{ form_usuario.tipo_usuario.errors }}
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="{{ form_usuario.email.id_for_label }}" class="form-label">E-mail</label>
-                            {{ form_usuario.email }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="{{ form_usuario.numero_telefone.id_for_label }}" class="form-label">Telefone</label>
-                            {{ form_usuario.numero_telefone }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="{{ form_usuario.data_nascimento.id_for_label }}" class="form-label">Data de Nascimento</label>
-                            {{ form_usuario.data_nascimento }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="{{ form_usuario.tipo_usuario.id_for_label }}" class="form-label">Tipo de Usuário</label>
-                            {{ form_usuario.tipo_usuario }}</div>
                         
                         <div class="d-grid mt-4" style="grid-column: 1 / -1;">
                             <input type="submit" value="Criar Conta" class="btn btn-principal btn-lg">
@@ -65,8 +121,11 @@
 <script src="https://unpkg.com/imask"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        
+    document.addEventListener('DOMContentLoaded', function() {  
+        var selectInputs = document.querySelectorAll('.form-aligned select');
+        selectInputs.forEach(select => {
+            select.classList.add('form-select');
+        });
         try {
             const phoneInput = document.querySelector("#id_numero_telefone");
             
@@ -82,8 +141,7 @@
         } catch (e) {
             console.warn("Não foi possível aplicar a máscara de telefone:", e);
         }
-
-
+        
     });
 </script>
 

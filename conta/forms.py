@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, DateInput
 from django import forms
 from conta.models.usuario import Usuario
 from django.contrib.auth.models import User
@@ -13,15 +13,17 @@ class UserForm(ModelForm):
         fields = ['username', 'password']
 
 class UsuarioForm(ModelForm):
-
-
+    data_nascimento = forms.DateField(
+        label="Data de Nascimento",
+        widget=DateInput(attrs={'type': 'date'}), 
+        required=True
+    )
     # corrige o erro de 'maxlength' do telefone
     numero_telefone = forms.CharField(
         label="Número de telefone",
         max_length=18,  
         required=True 
     )
-
 
     class Meta:
         """ classe meta """
@@ -34,7 +36,6 @@ class UsuarioForm(ModelForm):
         if telefone:
             telefone = re.sub(r'\D', '', telefone)
         return telefone
-
 
 class PacienteForm(ModelForm):
 

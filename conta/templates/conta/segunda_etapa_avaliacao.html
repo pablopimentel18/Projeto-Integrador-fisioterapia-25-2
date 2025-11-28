@@ -62,12 +62,20 @@
                 <h5 class="card-title">{{ form.segunda_etapa.label }}</h5>
                 <div class="form-group mt-3">
                     
-                    {% for radio in form.segunda_etapa %}
+                    {% with radio=form.segunda_etapa.1 %}
                         <div class="form-check form-check-inline mb-2">
                             {{ radio.tag }}
                             <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
                         </div>
-                    {% endfor %}
+                    {% endwith %}
+
+                    {% with radio=form.segunda_etapa.0 %}
+                        <div class="form-check form-check-inline mb-2">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                    {% endwith %}
+
                 </div>
             </div>
         </div>
@@ -95,7 +103,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        const radioLevantar = document.querySelector("#id_segunda_etapa_0");
+        const radioLevantar = document.querySelector("#id_segunda_etapa_0"); 
         const radioPreensao = document.querySelector("#id_segunda_etapa_1");
 
         const boxValor = document.querySelector("#box_valor");
@@ -125,6 +133,12 @@
         radioPreensao.addEventListener('change', function() {
             atualizarBox('preensao');
         });
+
+        if (radioLevantar.checked) {
+             atualizarBox('levantar');
+        } else if (radioPreensao.checked) {
+             atualizarBox('preensao');
+        }
 
     });
 </script>

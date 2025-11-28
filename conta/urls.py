@@ -23,4 +23,5 @@ urlpatterns = [
     path('alunos/', conta_views.aluno_list, name='aluno_list'),
     path('paciente/avaliar/<int:questionario_id>/diagnostico/pdf/', conta_views.exportar_diagnostico_pdf, name='exportar_diagnostico_pdf'),
     path('alunos/<int:usuario_id>/avaliacoes', conta_views.aluno_avaliacoes, name='aluno_avaliacoes'),
+    path('relatorios/gerais/', conta_views.relatorios_gerais, name='relatorios_gerais')
 ]

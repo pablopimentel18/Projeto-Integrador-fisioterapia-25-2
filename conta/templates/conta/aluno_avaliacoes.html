@@ -1,14 +1,63 @@
 {% extends 'menu.html' %}
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card-custom">
-                <h1 class="text-center mb-4">Lista de Avaliações do aluno {{aluno.nome}}</h1>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+<style>
+    :root {
+        --cor-principal: #5c5f96;
+        --cor-principal-hover: #4a4d7c;
+        --cor-fundo: #f8f9fa;
+        --cor-texto: #212529;
+    }
+    
+    .list-header {
+        color: var(--cor-principal);
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.85em;
+        letter-spacing: 0.5px;
+        padding: 0 1.25rem; 
+        margin-bottom: 8px;
+    }
 
-                        {% for questionario in avaliacoes %}
+    .accordion-button {
+        background: white !important;
+        border: none;
+        color: var(--cor-principal) !important;
+        font-weight: 500;
+        box-shadow: none;
+        cursor: pointer; 
+    }
+    .accordion-button:not(.collapsed) {
+        color: var(--cor-principal) !important;
+        background-color: #f0f1fa !important;
+    }
+    .diagnostico-label { font-size: 1.1em; color: var(--cor-principal); font-weight: bold; }
+    .export-btn-container { display: flex; justify-content: flex-end; align-items: center; }
+    .table thead th { background: #f0f1fa; color: var(--cor-principal); font-weight: 500; }
+    .badge-normal { background-color: #198754; }
+    .badge-alerta { background-color: #ffc107; color: #212529; }
+    .badge-grave { background-color: #dc3545; }
+    .etapa-descricao { font-size: 0.95em; color: #888; }
+    .accordion-body { background: #fcfcff; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Histórico de Avaliações</h3>
+    <hr class="mb-5">
+    
+    <div class="row w-100 list-header d-none d-md-flex">
+        <div class="col-4">PACIENTE</div>
+        <div class="col-3">DATA DA AVALIAÇÃO</div>
+        <div class="col-3">DIAGNÓSTICO</div>
+        <div class="col-2">PDF</div> 
+    </div>
+
+    <div class="accordion" id="avaliacoesAccordion">
+        {% for questionario in avaliacoes %}
         <div class="accordion-item mb-3 border-0">
             <h2 class="accordion-header" id="heading{{ forloop.counter }}">
                 <div class="accordion-button collapsed shadow-sm w-100" 
@@ -34,7 +83,9 @@
                             <a href="{% url 'exportar_diagnostico_pdf' questionario.id %}"
                                onclick="iniciarDownload(event, this)"
                                class="btn btn-outline-primary btn-sm">
-                                <span class="texto-original">Exportar PDF</span>
+                                <span class="texto-original">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i> Exportar PDF
+                                </span>
                                 <span class="texto-loading d-none">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Gerando...
@@ -44,10 +95,10 @@
                     </div>
                 </div>
             </h2>
+            
             <div id="collapse{{ forloop.counter }}"
                  class="accordion-collapse collapse"
-                 aria-labelledby="heading{{ forloop.counter }}"
-                 data-bs-parent="#avaliacoesAccordion">
+                 aria-labelledby="heading{{ forloop.counter }}">
                 <div class="accordion-body">
                     <table class="table table-bordered mb-1">
                         <thead>
@@ -317,8 +368,64 @@
             </div>
         </div>
         {% endfor %}
-            </div>
-        </div>
     </div>
 </div>
+
+<script>
+    async function iniciarDownload(event, elemento) {
+        event.preventDefault();
+        event.stopPropagation(); 
+        
+        const url = elemento.getAttribute('href');
+        
+        const textoOriginal = elemento.querySelector('.texto-original');
+        const textoLoading = elemento.querySelector('.texto-loading');
+        
+        elemento.classList.add('disabled'); 
+        elemento.style.pointerEvents = 'none';
+        textoOriginal.classList.add('d-none');
+        textoLoading.classList.remove('d-none');
+
+        try {
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error('Erro na geração do PDF');
+            }
+
+            const blob = await response.blob();
+            
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.style.display = 'none';
+
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let fileName = 'diagnostico_sarcopenia.pdf';
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+                if (fileNameMatch && fileNameMatch.length === 2) {
+                    fileName = fileNameMatch[1];
+                }
+            }
+            a.download = fileName;
+            
+            document.body.appendChild(a);
+            a.click();
+            
+            window.URL.revokeObjectURL(downloadUrl);
+            document.body.removeChild(a);
+
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Ocorreu um erro ao gerar o PDF. Tente novamente.');
+        } finally {
+            elemento.classList.remove('disabled');
+            elemento.style.pointerEvents = 'auto';
+            textoOriginal.classList.remove('d-none');
+            textoLoading.classList.add('d-none');
+        }
+    }
+</script>
+
 {% endblock %}
