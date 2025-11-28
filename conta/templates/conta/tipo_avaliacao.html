@@ -31,6 +31,24 @@
                 </button>
             </form>
 
+            <hr class="mb-5">
+
+            <h3 class="text-center mb-4 text-principal" style="font-weight: bold;">
+                Dados do Paciente: <span class="text-principal">{{ paciente.nome }}</span>
+            </h3>
+            <hr class="mb-5">
+
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Nome: </strong> {{ paciente.nome }}</li>
+                <li class="list-group-item"><strong>Idade: </strong> {{ paciente.idade }}</li>
+                <li class="list-group-item"><strong>Peso: </strong> {{ paciente.peso }} Kg</li>
+                <li class="list-group-item"><strong>Altura: </strong> {{ paciente.estatura }}</li>
+            </ul>
+
+            <button>                                     <a class="dropdown-item" href="{% url 'update_paciente' paciente.id %}">
+                                        <i class="bi bi-pencil-square me-2"></i> Editar Cadastro
+                                    </a>   </button>
+
         </div>
     </div>
 </div>

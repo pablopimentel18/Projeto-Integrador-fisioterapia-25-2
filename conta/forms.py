@@ -13,16 +13,7 @@ class UserForm(ModelForm):
         fields = ['username', 'password']
 
 class UsuarioForm(ModelForm):
-    """ formulario para criar um usuario """
-    data_nascimento = forms.DateField(
-        label="Data de Nascimento",
-        widget=forms.TextInput(
-            attrs={'placeholder': 'DD/MM/AAAA'}
-        ),
-        initial=None,
-        input_formats=['%d/%m/%Y'], 
-        required=True
-    )
+
 
     # corrige o erro de 'maxlength' do telefone
     numero_telefone = forms.CharField(
@@ -31,10 +22,11 @@ class UsuarioForm(ModelForm):
         required=True 
     )
 
+
     class Meta:
         """ classe meta """
         model = Usuario
-        fields = ['nome', 'email', 'numero_telefone', 'data_nascimento']
+        fields = ['nome', 'email', 'numero_telefone', 'data_nascimento', 'tipo_usuario']
 
     def clean_numero_telefone(self):
         """ Limpa o campo 'numero_telefone', removendo a máscara. """

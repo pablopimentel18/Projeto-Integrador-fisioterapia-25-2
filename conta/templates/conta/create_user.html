@@ -48,6 +48,9 @@
                             <label for="{{ form_usuario.data_nascimento.id_for_label }}" class="form-label">Data de Nascimento</label>
                             {{ form_usuario.data_nascimento }}
                         </div>
+                        <div class="mb-3">
+                            <label for="{{ form_usuario.tipo_usuario.id_for_label }}" class="form-label">Tipo de Usuário</label>
+                            {{ form_usuario.tipo_usuario }}</div>
                         
                         <div class="d-grid mt-4" style="grid-column: 1 / -1;">
                             <input type="submit" value="Criar Conta" class="btn btn-principal btn-lg">
@@ -80,17 +83,6 @@
             console.warn("Não foi possível aplicar a máscara de telefone:", e);
         }
 
-        try {
-            const dateInput = document.querySelector("#id_data_nascimento");
-            
-            if (dateInput) {
-                IMask(dateInput, {
-                    mask: '00/00/0000'
-                });
-            }
-        } catch (e) {
-            console.warn("Não foi possível aplicar a máscara de data:", e);
-        }
 
     });
 </script>

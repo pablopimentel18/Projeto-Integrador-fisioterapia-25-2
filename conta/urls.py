@@ -20,5 +20,7 @@ urlpatterns = [
     path('paciente/avaliar/<int:questionario_id>/quarta_etapa/', conta_views.quarta_etapa_avaliacao, name='avaliar_quarta_etapa'),
     path('paciente/avaliar/<int:questionario_id>/diagnostico/', conta_views.diagnostico, name='diagnostico'),
     path('paciente/avaliacoes/<int:paciente_id>/', conta_views.questionario_list, name='listar_avaliacoes'),
+    path('alunos/', conta_views.aluno_list, name='aluno_list'),
     path('paciente/avaliar/<int:questionario_id>/diagnostico/pdf/', conta_views.exportar_diagnostico_pdf, name='exportar_diagnostico_pdf'),
+    path('alunos/<int:usuario_id>/avaliacoes', conta_views.aluno_avaliacoes, name='aluno_avaliacoes'),
 ]

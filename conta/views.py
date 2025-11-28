@@ -605,3 +605,43 @@ def questionario_list(request, paciente_id):
     }
     return render(request, 'conta/questionario_list.html', context)
 	
+
+@login_required
+def aluno_list(request):
+    """ Esta view é responsável por listar todos os alunos cadastrados no sistema """
+
+    try:
+        if request.user.usuario.tipo_usuario == 'P':
+            alunos_avaliadores = Usuario.objects.filter(tipo_usuario='A').select_related('user')
+         
+            context = {
+                'alunos': alunos_avaliadores,
+            } 
+        else:
+            return HttpResponse("Acesso negado. Apenas professores administradores podem acessar esta página.", status=403)
+        
+    except Usuario.DoesNotExist:
+        return HttpResponse("Acesso negado. Usuário não encontrado.", status=403)
+    
+    return render(request, 'conta/aluno_list.html', context)
+
+@login_required
+def aluno_avaliacoes(request, usuario_id):
+    """ Esta view é responsável por listar todas as avaliações de um aluno específico """
+    aluno = get_object_or_404(Usuario, pk=usuario_id)
+
+    if aluno.tipo_usuario != 'A':
+        return HttpResponse("Acesso negado. O usuário especificado não é um aluno avaliador.", status=403)
+
+
+    else:
+
+        pacientes = Paciente.objects.filter(avaliador=aluno)
+        avaliacoes = Questionario.objects.filter(paciente__in=pacientes).order_by('-data')
+
+        context = {
+            'aluno': aluno,
+            'avaliacoes': avaliacoes,
+        }
+    
+    return render(request, 'conta/aluno_avaliacoes.html', context)

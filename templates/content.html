@@ -102,7 +102,7 @@
 
 <div class="container mt-4">
     
-    {% if user.is_authenticated %}
+    {% if user.usuario.tipo_usuario == 'A' %}
         <div class="hero-section text-center text-md-start d-flex flex-column flex-md-row align-items-center justify-content-between">
             <div>
                 <h1 class="fw-bold text-white">Olá, {{ user.first_name|default:user.username }}!</h1>
@@ -159,6 +159,20 @@
                 <i class="bi bi-info-circle me-1"></i> Sobre o Projeto e a Equipe
             </a>
         </div>
+
+    {% elif user.usuario.tipo_usuario == 'P' %}
+        <div class="hero-section text-center text-md-start d-flex flex-column flex-md-row align-items-center justify-content-between">
+            <div>
+                <h1 class="fw-bold text-white">Olá, Professor {{ user.usuario.nome }}!</h1>
+                <p class="mb-0 text-white" style="font-size: 1.1rem;">Bem-vindo ao Sistema de Avaliação SARC-F.</p>
+
+                <a href="{% url 'aluno_list' %}" class="btn btn-light btn-lg mt-3">
+                    <i class="bi bi-people-fill me-2"></i> Gerenciar Alunos Avaliadores
+            </div>
+        </div>
+
+
+
 
     {% else %}
         <div class="text-center mt-5">
