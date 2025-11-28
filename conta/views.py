@@ -75,7 +75,7 @@ def split(string, sep):
 
 
 def create_user(request):
-    """ Esta view é responsável por criar um User e um Corredor """
+    """ Esta view é responsável por criar um User """
     mensagem = ''
     if request.method == 'POST':
         form_user = UserForm(request.POST)
@@ -262,23 +262,27 @@ def paciente_delete(request, paciente_id):
 
 	
 @login_required
-def tipo_avaliacao(request, paciente_id): 
-    """ Esta view é responsável por escolher o tipo de avaliação do paciente """
-    """ Ela também instância um novo questionário para o paciente """
+def tipo_avaliacao(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
 
-    questionario = Questionario.objects.create(
-        paciente=paciente,
-        avaliador=paciente.avaliador,
-        data=timezone.now(),
-        respostas = {},
-    )
+    if request.method == 'POST':
+        tipo = request.POST.get('tipo')
+
+        questionario = Questionario.objects.create(
+            paciente=paciente,
+            avaliador=paciente.avaliador,
+            data=timezone.now(),
+            respostas={},
+            tipo=tipo,
+        )
+
+        print("CRIADO QUESTIONARIO:", questionario.id, "TIPO:", questionario.tipo)
+
+        return redirect('avaliar_primeira_etapa', questionario_id=questionario.id)
 
     context = {
         'paciente': paciente,
-        'questionario': questionario,
     }
-    
     return render(request, 'conta/tipo_avaliacao.html', context)
 
 
@@ -290,13 +294,14 @@ def primeira_etapa_avaliacao(request, questionario_id):
     questionario = get_object_or_404(Questionario, id=questionario_id)
     paciente = questionario.paciente
 
+    print("ETAPA 1 - QUESTIONARIO", questionario.id, "TIPO:", questionario.tipo)
+
     pontuacao = 0
     if request.method == 'POST':
         form = QuestionarioSarcopeniaForm(request.POST)
 
         if form.is_valid():
             dados_avaliacao = form.cleaned_data
-            questionario.tipo = 'N'
             questionario.respostas.update(dados_avaliacao)
             questionario.save()
             dados_avaliacao.values()
@@ -346,6 +351,8 @@ def segunda_etapa_avaliacao(request, questionario_id):
     """ Esta view é responsável por realizar a segunda etapa da avaliação do paciente """
     questionario = get_object_or_404(Questionario, id=questionario_id)
     paciente = questionario.paciente
+
+    print("ETAPA 2 - QUESTIONARIO", questionario.id, "TIPO:", questionario.tipo)
 
     if request.method == 'POST':
         form = QuestionarioSegundaEtapaForm(request.POST)
@@ -421,6 +428,8 @@ def terceira_etapa_avaliacao(request, questionario_id):
     questionario = get_object_or_404(Questionario, id=questionario_id)
     paciente = questionario.paciente
 
+    print("ETAPA 3 - QUESTIONARIO", questionario.id, "TIPO:", questionario.tipo)
+
     if request.method == 'POST':
         form = QuestionarioTerceiraEtapaForm(request.POST)
 
@@ -459,8 +468,13 @@ def terceira_etapa_avaliacao(request, questionario_id):
                     raca = -1.2
 
                 if paciente.sexo == 'F':
-
-                    immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100.0)) - (0.098 * paciente.idade) + (raca -3.3))/((paciente.estatura/100)*(paciente.estatura/100))
+                    
+                    if questionario.tipo == 'N':
+                        immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100.0)) - (0.098 * paciente.idade) + (raca -3.3))/((paciente.estatura/100)*(paciente.estatura/100))
+                        print("USANDO EQUAÇÃO NORMAL (F), IMMEA =", immea)
+                    else:
+                        immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100)) - (0.098 * paciente.idade) + (raca -3.3))/(paciente.peso)
+                        print("USANDO EQUAÇÃO OBESO (F), IMMEA =", immea)
 
                     if immea < 6.4:
                         resultado = 'Baixa massa muscular esquelética dos membros inferiores pelo IMMEA'
@@ -468,7 +482,12 @@ def terceira_etapa_avaliacao(request, questionario_id):
                     else:
                         resultado = 'Massa muscular esquelética dos membros inferiores normal pelo IMMEA'
                 else:
-                    immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100)) + (6.6 * 1) - (0.098 * paciente.idade) + (raca -3.3))/((paciente.estatura/100)*(paciente.estatura/100))
+                    if questionario.tipo == 'N':    
+                        immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100)) + (6.6 * 1) - (0.098 * paciente.idade) + (raca -3.3))/((paciente.estatura/100)*(paciente.estatura/100))
+                        print("USANDO EQUAÇÃO NORMAL (M), IMMEA =", immea)
+                    else:
+                        immea = ((0.244*paciente.peso) + (7.8 * (paciente.estatura/100)) + (6.6 * 1) - (0.098 * paciente.idade) + (raca -3.3))/(paciente.peso)
+                        print("USANDO EQUAÇÃO OBESO (M), IMMEA =", immea)
                     if immea < 8.9:
                         resultado = 'Baixa massa muscular esquelética dos membros inferiores pelo IMMEA'
                         quarta = True
@@ -542,65 +561,6 @@ def quarta_etapa_avaliacao(request, questionario_id):
     }
 
     return render(request, 'conta/quarta_etapa_avaliacao.html', context)
-
-
-def primeira_etapa_avaliacao_obeso(request, questionario_id):
-    """ Esta view é responsável por realizar a avaliação do paciente obeso """
-
-    questionario = get_object_or_404(Questionario, id=questionario_id)
-    paciente = questionario.paciente
-
-    pontuacao = 0
-    if request.method == 'POST':
-        form = QuestionarioSarcopeniaForm(request.POST)
-
-        if form.is_valid():
-            dados_avaliacao = form.cleaned_data
-            questionario.tipo = 'O'
-            questionario.respostas.update(dados_avaliacao)
-            questionario.save()
-            dados_avaliacao.values()
-            for resposta in dados_avaliacao.values():
-
-                if int(resposta) <=2:
-                    pontuacao += int(resposta)
-                
-                else:
-                    if(paciente.sexo == 'F'):
-                        if(int(resposta) <= 33):
-                            pontuacao += 10
-                        else:
-                            pontuacao +=0
-                    else:
-                        if(int(resposta) <= 34):
-                            pontuacao += 10
-                        else:
-                            pontuacao +=0
-
-            if(pontuacao>=11):
-                questionario.save()
-                resultado_texto = "Paciente Atingiu mais de 11 pontos.\nReferente à potencial diagnóstico de Sarcopenia!."
-
-                messages.success(request, resultado_texto)
-                return redirect('avaliar_segunda_etapa', questionario_id=questionario.id)
-
-            questionario.diagnostico = 'Paciente sem sarcopenia. *Obeso'
-            questionario.save()
-
-            resultado_texto = "Paciente Sem Sarcopenia *Obeso"
-
-            messages.success(request, resultado_texto)
-
-            return redirect('diagnostico', questionario_id=questionario.id)
- 
-    else:
-        form = QuestionarioSarcopeniaForm()
-    
-    context = {
-        'form': form,
-        'paciente': paciente,
-    }
-    return render(request, 'conta/primeira_etapa_avaliacao_obeso.html', context)
 
 @login_required
 def diagnostico(request, questionario_id):

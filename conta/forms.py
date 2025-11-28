@@ -146,7 +146,7 @@ class QuestionarioSarcopeniaForm(forms.Form):
         required=True,)
     
     circunferencia_panturrilha = forms.IntegerField(
-        label="Medir circunferência da perna direita com paciente em pé, com os pés afastados 20cm e com as pernas relaxadas.",
+        label="Medir CP (Circunferência Panturrilha) da perna direita com paciente em pé, com os pés afastados 20cm e pernas relaxadas.",
         required=True
     )
 

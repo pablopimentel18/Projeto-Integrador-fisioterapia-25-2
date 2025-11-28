@@ -18,7 +18,6 @@ urlpatterns = [
     path('paciente/avaliar/<int:questionario_id>/segunda_etapa/', conta_views.segunda_etapa_avaliacao, name='avaliar_segunda_etapa'),
     path('paciente/avaliar/<int:questionario_id>/terceira_etapa/', conta_views.terceira_etapa_avaliacao, name='avaliar_terceira_etapa'),
     path('paciente/avaliar/<int:questionario_id>/quarta_etapa/', conta_views.quarta_etapa_avaliacao, name='avaliar_quarta_etapa'),
-    path('paciente/avaliar/<int:questionario_id>/primeira_etapa_obeso/', conta_views.primeira_etapa_avaliacao_obeso, name='avaliar_primeira_etapa_obeso'),
     path('paciente/avaliar/<int:questionario_id>/diagnostico/', conta_views.diagnostico, name='diagnostico'),
     path('paciente/avaliacoes/<int:paciente_id>/', conta_views.questionario_list, name='listar_avaliacoes'),
     path('paciente/avaliar/<int:questionario_id>/diagnostico/pdf/', conta_views.exportar_diagnostico_pdf, name='exportar_diagnostico_pdf'),

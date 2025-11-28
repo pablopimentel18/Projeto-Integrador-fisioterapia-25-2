@@ -1,19 +1,69 @@
 {% extends 'menu.html' %}
-{% load custom_filters %} {% block content %}
+{% load custom_filters %} 
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+{% block content %}
+<style>
+    :root {
+        --cor-principal: #5c5f96;
+        --cor-principal-hover: #4a4d7c;
+        --cor-secundaria: #8b5cf6;
+    }
+
+    /* Estilo para os botões principais de ação */
+    .btn-avaliar {
+        background-color: var(--cor-principal, #5c5f96);
+        border-color: var(--cor-principal, #5c5f96);
+        color: white;
+    }
+    .btn-avaliar:hover {
+        background-color: var(--cor-principal-hover, #4a4d7c);
+        border-color: var(--cor-principal-hover, #4a4d7c);
+        color: white;
+    }
+
+    .btn-historico {
+        background-color: #f0f1fa; /* Cor de fundo mais clara */
+        border-color: #d1d5db;
+        color: var(--cor-principal, #5c5f96);
+    }
+    .btn-historico:hover {
+        background-color: #e2e4f0;
+    }
+
+    /* Estilo para o dropdown de ações administrativas */
+    .btn-action-menu {
+        color: var(--cor-principal, #5c5f96);
+        border: 1px solid #d1d5db;
+        background-color: white;
+    }
+    .btn-action-menu i {
+        font-size: 1rem;
+    }
+    .table th, .table td {
+        vertical-align: middle;
+    }
+</style>
+
 <div class="container mt-5">
     <div class="card-custom">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Lista de Usuários</h1>
-            <a href="{% url 'create_paciente' user.id %}" class="btn btn-principal">Criar Novo Paciente</a>
+            <h1>Lista de Pacientes</h1>
+            <a href="{% url 'create_paciente' user.id %}" class="btn btn-principal">
+                <i class="bi bi-person-add me-1"></i> Cadastrar Novo Paciente
+            </a>
         </div>
+        
+        {% if pacientes %}
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Usuário</th>
+                    <th>Paciente</th>
                     <th>Email</th>
                     <th>Telefone</th>
                     <th>CPF</th>
-                    <th class="text-end">Ações</th>
+                    <th class="text-center" style="width: 250px;">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,15 +76,54 @@
                     <td>{{ paciente.cpf|mask_cpf }}</td>
                     
                     <td class="text-end">
-                        <a href="{% url 'listar_avaliacoes' paciente.id %}" class="btn btn-info btn-sm">Avaliações</a>
-                        <a href="{% url 'avaliacao_tipo' paciente.id %}" class="btn btn-primary btn-sm">Avaliar</a>
-                        <a href="{% url 'update_paciente' paciente.id %}" class="btn btn-secundario btn-sm">Editar</a>
-                        <a href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger btn-sm" onclick="user_deletado()">Deletar</a>
+                        
+                        <a href="{% url 'avaliacao_tipo' paciente.id %}" class="btn btn-avaliar btn-sm me-2" title="Iniciar Nova Avaliação">
+                            <i class="bi bi-file-earmark-plus"></i> Avaliar
+                        </a>
+                        
+                        <a href="{% url 'listar_avaliacoes' paciente.id %}" class="btn btn-historico btn-sm me-2" title="Ver Histórico Clínico">
+                            <i class="bi bi-clock-history"></i> Histórico
+                        </a>
+
+                        <div class="dropdown d-inline-block">
+                            <button class="btn btn-action-menu btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Mais Opções">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'update_paciente' paciente.id %}">
+                                        <i class="bi bi-pencil-square me-2"></i> Editar Cadastro
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{% url 'paciente_delete' paciente.id %}" onclick="user_deletado()">
+                                        <i class="bi bi-trash me-2"></i> Deletar Paciente
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+        {% else %}
+        <div class="alert alert-info text-center mt-4" role="alert">
+            <i class="bi bi-info-circle me-2"></i>Nenhum paciente cadastrado. Comece a usar o sistema agora!
+        </div>
+        {% endif %}
     </div>
 </div>
+
+<script>
+    // Função para confirmar a exclusão do paciente (usada no botão Deletar)
+    function user_deletado() {
+        if (!confirm('Tem certeza que deseja deletar este paciente? Esta ação é irreversível.')) {
+            event.preventDefault(); 
+        }
+    }
+</script>
+
 {% endblock content %}

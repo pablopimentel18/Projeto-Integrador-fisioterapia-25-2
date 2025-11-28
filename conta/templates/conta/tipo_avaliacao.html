@@ -1,5 +1,6 @@
 {% extends 'menu.html' %}
-{% load static %} {% block content %}
+{% load static %}
+{% block content %}
 
 <style>
     .card-custom {
@@ -9,6 +10,7 @@
         padding: 2.5rem;
     }
 </style>
+
 <div class="container mt-5">
     <div class="card card-custom">
         <div class="card-body">
@@ -18,13 +20,19 @@
             </h3>
             <hr class="mb-5">
 
-            <div class="d-flex flex-column gap-3">
-                
-                <a href="{% url 'avaliar_primeira_etapa' questionario.id %}" class="btn btn-principal btn-lg">Avaliação para pacientes de peso ideal</a>
-                
-                <a href="{% url 'avaliar_primeira_etapa_obeso' questionario.id %}" class="btn btn-principal btn-lg">Avaliação para pacientes obesos</a>
-            </div>
+            <form method="post" class="d-flex flex-column gap-3">
+                {% csrf_token %}
+                <button type="submit" name="tipo" value="N" class="btn btn-principal btn-lg">
+                    Avaliação para pacientes de peso ideal
+                </button>
+
+                <button type="submit" name="tipo" value="O" class="btn btn-principal btn-lg">
+                    Avaliação para pacientes obesos
+                </button>
+            </form>
+
         </div>
     </div>
 </div>
+
 {% endblock content %}
