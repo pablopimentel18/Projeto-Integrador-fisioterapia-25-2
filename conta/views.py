@@ -103,7 +103,7 @@ def create_user(request):
 
             form_instante.senha = form_user.cleaned_data['password']
             form_instante.nome_de_usuario = form_user.cleaned_data['username']
-
+            form_instante.tipo_usuario = form_usuario.cleaned_data['tipo_usuario']
             form_instante.save()
 
             mensagem = 'Usuário criado com sucesso'
