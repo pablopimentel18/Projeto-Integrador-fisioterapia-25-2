@@ -15,20 +15,19 @@ class UserForm(ModelForm):
 class UsuarioForm(ModelForm):
     data_nascimento = forms.DateField(
         label="Data de Nascimento",
-        widget=DateInput(attrs={'type': 'date'}), 
+        widget=DateInput(attrs={'type': 'date'}),
         required=True
     )
-    # corrige o erro de 'maxlength' do telefone
+
     numero_telefone = forms.CharField(
         label="Número de telefone",
-        max_length=18,  
-        required=True 
+        max_length=18,
+        required=True
     )
 
     class Meta:
-        """ classe meta """
         model = Usuario
-        fields = ['nome', 'email', 'numero_telefone', 'data_nascimento', 'tipo_usuario']
+        fields = ['nome', 'email', 'numero_telefone', 'data_nascimento']
 
     def clean_numero_telefone(self):
         """ Limpa o campo 'numero_telefone', removendo a máscara. """
@@ -41,12 +40,12 @@ class PacienteForm(ModelForm):
 
     cpf = forms.CharField(
         label="CPF",
-        max_length=18, # Permite '000.000.000-00'
+        max_length=18,
         required=True
     )
     numero_telefone = forms.CharField(
         label="Número de telefone",
-        max_length=18, # Permite que '(00) 00000-0000' passe
+        max_length=18,
         required=True
     )
 

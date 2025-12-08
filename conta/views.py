@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from conta.models.usuario import Usuario
 from conta.models.paciente import Paciente
+from conta.models.codigo_professor import CodigoProfessor
 from questionario.models.questionario import Questionario
 from .forms import QuestionarioSegundaEtapaForm, QuestionarioTerceiraEtapaForm, UserForm, UsuarioForm, PacienteForm, QuestionarioSarcopeniaForm, QuestionarioQuartaEtapaForm
 from django.contrib.auth.decorators import login_required
@@ -75,42 +76,63 @@ def split(string, sep):
 
 
 def create_user(request):
-    """ Esta view é responsável por criar um User """
     mensagem = ''
+
     if request.method == 'POST':
         form_user = UserForm(request.POST)
         form_usuario = UsuarioForm(request.POST)
 
         if form_user.is_valid() and form_usuario.is_valid():
+            codigo_digitado = request.POST.get('codigo_professor', '').strip()
+            modo_professor = request.POST.get('modo_professor')
+            
+            tipo = 'A'
+            codigo_atual_obj = None
+
+            if modo_professor:
+                if not codigo_digitado:
+                    messages.error(request, 'Você ativou a opção de Professor mas não inseriu o código.')
+                    return render(request, 'conta/create_user.html', {
+                        'mensagem': 'Insira o código ou desative a opção de professor.',
+                        'form_user': form_user,
+                        'form_usuario': form_usuario,
+                    })
+
+                codigo_atual_obj = CodigoProfessor.get_atual()
+                if codigo_digitado != (codigo_atual_obj.codigo or ''):
+                    messages.error(request, 'Código de professor inválido! A conta não foi criada.')
+                    return render(request, 'conta/create_user.html', {
+                        'mensagem': 'Código de professor inválido!',
+                        'form_user': form_user,
+                        'form_usuario': form_usuario,
+                    })
+                tipo = 'P'
 
             user = form_user.save()
-            user.password =make_password(form_user.cleaned_data['password'])
-            checkpassword=check_password(request.POST['password'], user.password)
-            user_id = user.id
-            print(user.password)
+            user.password = make_password(form_user.cleaned_data['password'])
             user.save()
-            print(user.password)
 
             form_instante = Usuario()
-
-            form_instante.id = user_id
             form_instante.user = user
-
             form_instante.nome = form_usuario.cleaned_data['nome']
             form_instante.email = form_usuario.cleaned_data['email']
             form_instante.numero_telefone = form_usuario.cleaned_data['numero_telefone']
             form_instante.data_nascimento = form_usuario.cleaned_data['data_nascimento']
-
             form_instante.senha = form_user.cleaned_data['password']
             form_instante.nome_de_usuario = form_user.cleaned_data['username']
-            form_instante.tipo_usuario = form_usuario.cleaned_data['tipo_usuario']
+            form_instante.tipo_usuario = tipo
             form_instante.save()
 
-            mensagem = 'Usuário criado com sucesso'
+            if tipo == 'P' and codigo_atual_obj:
+                codigo_atual_obj.codigo = CodigoProfessor.gerar_novo_codigo()
+                codigo_atual_obj.save()
+
+            messages.success(request, 'Conta criada com sucesso! Faça login para continuar.')
             return redirect('login')
     else:
         form_user = UserForm()
         form_usuario = UsuarioForm()
+
 
     context = {
         'mensagem': mensagem,
