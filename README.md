@@ -391,9 +391,11 @@ weasyprint>=66.0             # Geração de PDFs
 
 ### Fluxo Completo de Avaliação
 
-```
+<p align="center">
+  <img src="docs/imgs/Manual_SBGG_1.jpg" alt="Fluxo de Avaliação SBGG" width="80%">
+</p>
 
-```
+*Protocolo de avaliação baseado nas diretrizes da SBGG (Sociedade Brasileira de Geriatria e Gerontologia)*
 ---
 
 ## 📖 Como Usar
