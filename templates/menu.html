@@ -17,9 +17,9 @@
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="{% url 'sobre' %}">Sobre</a></li>
-            <li><a class="dropdown-item" href="{% url 'usuario_list' user.id %}">Usuários</a></li>
-            <li><a class="dropdown-item" href="{% url 'usuario_read' user.id %}">Meu Perfil</a></li>
-            <li><a class="dropdown-item" href="{% url 'create_paciente' user.id %}">Cadastrar Paciente</a></li>
+            <li><a class="dropdown-item" href="{% url 'usuario_list' user.usuario.id %}">Usuários</a></li>
+            <li><a class="dropdown-item" href="{% url 'usuario_read' user.usuario.id %}">Meu Perfil</a></li>
+            <li><a class="dropdown-item" href="{% url 'create_paciente' user.usuario.id %}">Cadastrar Paciente</a></li>
           </ul>
         </li>
         {% endif %}
