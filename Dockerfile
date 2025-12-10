@@ -1,37 +1,41 @@
-# Step 1: Start with a clean, official Python base image
-# This is our "clean kitchen" with Python 3.10 already installed.
+# Step 1: Base image
 FROM python:3.10-slim
 
-# Step 2: Set environment variables
-# These tell Python not to buffer output (so logs show up immediately)
-# and not to write .pyc files, which we don't need in a container.
+# Step 2: Env vars
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Step 3: Create and set the "working directory" inside the container
-# This is where all our app code will live.
+# Step 3: Workdir
 WORKDIR /app
 
-# Step 4: Install the Python dependencies (the "ingredients")
-# We copy *only* the requirements file first and install.
-# Docker is smart: it caches this step. If we don't change requirements.txt,
-# it won't re-install everything every time we build, which is much faster.
-COPY requirements.txt /app/
-RUN pip install -r requirements.txt
+# Step 4: System Dependencies (MUDANÇA IMPORTANTE)
+# Devemos instalar as dependências do sistema ANTES do pip.
+# Se algum pacote no requirements.txt precisar do Pango/Glib para compilar,
+# ele falharia na sua versão original.
+RUN apt-get update && apt-get install -y \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libgobject-2.0-0 \
+    libglib2.0-dev \
+    # Adicione build-essential e libpq-dev se usar Postgres ou precisar compilar C
+    # build-essential \
+    # libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Step 5: Copy the rest of your Django project code into the container
-# This copies everything (your "my_project" folder, "my_app" folder, manage.py, etc.)
-# from your computer's current directory into the /app directory inside the container.
-COPY . /app/
+# Step 5: Python Dependencies
+# Boa prática: atualizar o pip antes de instalar os pacotes
+RUN pip install --upgrade pip
 
-# Step 6: Expose the port the app will run on
-# This tells Docker that our container will listen on port 8000.
-# Note: This doesn't *run* the app, it's just metadata.
+COPY requirements.txt .
+
+# Adicionado --no-cache-dir para manter a imagem leve
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Step 6: Copy project files
+COPY . .
+
+# Step 7: Expose port
 EXPOSE 8000
 
-# Step 7: Define the command to run the application
-# We use Gunicorn, a production-ready web server (which you should
-# add to your requirements.txt).
-# We are *not* using `python manage.py runserver`, as that is
-# only for development and is insecure and inefficient.
+# Step 8: Run command
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
